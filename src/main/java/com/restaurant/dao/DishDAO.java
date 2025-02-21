@@ -1,6 +1,6 @@
-package dao;
+package com.restaurant.dao;
 
-import entities.Dish;
+import com.restaurant.entities.Dish;
 
 public interface DishDAO {
     void createDish(Dish dish);

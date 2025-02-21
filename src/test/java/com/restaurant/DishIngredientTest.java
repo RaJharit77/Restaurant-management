@@ -1,4 +1,4 @@
-package test;
+package com.restaurant;
 
 public class DishIngredientTest {
 }

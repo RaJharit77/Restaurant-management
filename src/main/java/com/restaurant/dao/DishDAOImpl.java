@@ -1,16 +1,12 @@
-package dao;
+package com.restaurant.dao;
 
-import entities.Dish;
-import entities.Ingredient;
-import entities.Unit;
-import db.DataSource;
+import com.restaurant.entities.Dish;
+import com.restaurant.entities.Ingredient;
+import com.restaurant.db.DataSource;
+import com.restaurant.entities.Unit;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.*;
+import java.util.*;
 
 public class DishDAOImpl implements DishDAO {
     private DataSource dataSource;
@@ -23,7 +19,7 @@ public class DishDAOImpl implements DishDAO {
     public void createDish(Dish dish) {
         String query = "INSERT INTO Dish (name, unit_price) VALUES (?, ?)";
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, dish.getName());
             statement.setDouble(2, dish.getUnitPrice());
             statement.executeUpdate();
@@ -85,7 +81,7 @@ public class DishDAOImpl implements DishDAO {
     }
 
     private List<Ingredient> getIngredientsForDish(int dishId) {
-        String query = "SELECT i.id, i.name, i.unit_price, i.unit, i.update_datetime, di.quantity " +
+        String query = "SELECT i.id, i.name, i.unit_price, i.unit, i.update_datetime, di.required_quantity " +
                 "FROM Ingredient i " +
                 "JOIN Dish_Ingredient di ON i.id = di.ingredient_id " +
                 "WHERE di.dish_id = ?";
@@ -97,13 +93,14 @@ public class DishDAOImpl implements DishDAO {
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                Ingredient ingredient = new Ingredient();
-                ingredient.setId(resultSet.getInt("id"));
-                ingredient.setName(resultSet.getString("name"));
-                ingredient.setUnitPrice(resultSet.getDouble("unit_price"));
-                ingredient.setUnit(Unit.valueOf(resultSet.getString("unit")));
-                ingredient.setUpdateDateTime(resultSet.getTimestamp("update_datetime").toLocalDateTime());
-                ingredient.setRequiredQuantity(resultSet.getDouble("quantity"));
+                Ingredient ingredient = new Ingredient(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getDouble("unit_price"),
+                        Unit.valueOf(resultSet.getString("unit")),
+                        resultSet.getTimestamp("update_datetime").toLocalDateTime(),
+                        resultSet.getDouble("required_quantity")
+                );
                 ingredients.add(ingredient);
             }
         } catch (SQLException e) {

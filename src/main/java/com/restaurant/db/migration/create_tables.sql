@@ -6,7 +6,7 @@ CREATE TABLE Ingredient (
     last_modified TIMESTAMP NOT NULL,
     unit_price DECIMAL(10, 2) NOT NULL,
     unit unit_type NOT NULL,
-    update_datetime TIMESTAMP NOT NULL
+    update_datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE Dish (

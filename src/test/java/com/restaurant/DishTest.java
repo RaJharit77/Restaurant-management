@@ -1,4 +1,4 @@
-package test;
+package com.restaurant;
 
 import dao.DishDAO;
 import dao.DishDAOImpl;

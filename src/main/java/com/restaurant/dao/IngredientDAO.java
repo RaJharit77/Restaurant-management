@@ -1,7 +1,7 @@
-package dao;
+package com.restaurant.dao;
 
-import entities.Ingredient;
-import entities.Unit;
+import com.restaurant.entities.Ingredient;
+import com.restaurant.entities.Unit;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package db;
+package com.restaurant.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

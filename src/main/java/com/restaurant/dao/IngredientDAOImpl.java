@@ -1,15 +1,11 @@
-package dao;
+package com.restaurant.dao;
 
-import entities.Ingredient;
-import entities.Unit;
-import db.DataSource;
+import com.restaurant.entities.Ingredient;
+import com.restaurant.entities.Unit;
+import com.restaurant.db.DataSource;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.*;
+import java.util.*;
 
 public class IngredientDAOImpl implements IngredientDAO {
     private DataSource dataSource;
