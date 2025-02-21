@@ -1,9 +1,9 @@
 package com.restaurant;
 
-import dao.DishDAO;
-import dao.DishDAOImpl;
-import entities.Dish;
-import db.DataSource;
+import com.restaurant.dao.DishDAO;
+import com.restaurant.dao.DishDAOImpl;
+import com.restaurant.entities.Dish;
+import com.restaurant.db.DataSource;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

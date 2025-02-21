@@ -58,8 +58,9 @@ class DishIngredientTest {
         ingredientDAO.createIngredient(sausage);
         ingredientDAO.createIngredient(oil);
 
-        List<Ingredient> filteredIngredients = ingredientDAO.filterIngredients("u", Unit.G, 10.0, 1000.0, 1, 10);
-        assertEquals(1, filteredIngredients.size());
-        assertEquals("Saucisse", filteredIngredients.getFirst().getName());
+        List<Ingredient> filteredIngredients = ingredientDAO.filterIngredients("u", Unit.G, 10.0, 1000.0, 1, 1);
+
+        assertEquals(1, filteredIngredients.size(), "Le nombre d'ingrédients filtrés est incorrect");
+        assertEquals("Saucisse", filteredIngredients.getFirst().getName(), "L'ingrédient filtré est incorrect");
     }
 }

@@ -19,14 +19,29 @@ public class DishDAOImpl implements DishDAO {
     public void createDish(Dish dish) {
         String query = "INSERT INTO Dish (name, unit_price) VALUES (?, ?)";
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+             PreparedStatement statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, dish.getName());
             statement.setDouble(2, dish.getUnitPrice());
             statement.executeUpdate();
 
+            // Récupérer l'ID généré pour le plat
             ResultSet generatedKeys = statement.getGeneratedKeys();
             if (generatedKeys.next()) {
                 dish.setId(generatedKeys.getInt(1));
+            }
+
+            // Insérer les relations dans Dish_Ingredient
+            if (dish.getIngredients() != null) {
+                for (Ingredient ingredient : dish.getIngredients()) {
+                    String dishIngredientQuery = "INSERT INTO Dish_Ingredient (dish_id, ingredient_id, quantity, unit) VALUES (?, ?, ?, ?::unit_type)";
+                    try (PreparedStatement dishIngredientStatement = connection.prepareStatement(dishIngredientQuery)) {
+                        dishIngredientStatement.setInt(1, dish.getId());
+                        dishIngredientStatement.setInt(2, ingredient.getId());
+                        dishIngredientStatement.setDouble(3, ingredient.getRequiredQuantity());
+                        dishIngredientStatement.setString(4, ingredient.getUnit().name());
+                        dishIngredientStatement.executeUpdate();
+                    }
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Erreur lors de la création du plat", e);
@@ -81,7 +96,7 @@ public class DishDAOImpl implements DishDAO {
     }
 
     private List<Ingredient> getIngredientsForDish(int dishId) {
-        String query = "SELECT i.id, i.name, i.unit_price, i.unit, i.update_datetime, di.required_quantity " +
+        String query = "SELECT i.id, i.name, i.unit_price, i.unit, i.update_datetime, di.quantity " +
                 "FROM Ingredient i " +
                 "JOIN Dish_Ingredient di ON i.id = di.ingredient_id " +
                 "WHERE di.dish_id = ?";
@@ -99,7 +114,7 @@ public class DishDAOImpl implements DishDAO {
                         resultSet.getDouble("unit_price"),
                         Unit.valueOf(resultSet.getString("unit")),
                         resultSet.getTimestamp("update_datetime").toLocalDateTime(),
-                        resultSet.getDouble("required_quantity")
+                        resultSet.getDouble("quantity")
                 );
                 ingredients.add(ingredient);
             }

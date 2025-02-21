@@ -28,6 +28,11 @@ public class RestaurantManagementApp {
         dishDAO.createDish(hotDog);
 
         Dish retrievedDish = dishDAO.findById(hotDog.getId());
-        System.out.println("Coût des ingrédients du plat: " + retrievedDish.getIngredientCost());
+
+        if (retrievedDish != null) {
+            System.out.println("Coût des ingrédients du plat: " + retrievedDish.getIngredientCost());
+        } else {
+            System.out.println("Le plat n'a pas été trouvé dans la base de données.");
+        }
     }
 }
