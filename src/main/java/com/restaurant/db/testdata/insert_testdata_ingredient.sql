@@ -1,5 +1,5 @@
-INSERT INTO Ingredient (name, last_modified, unit_price, unit) VALUES
-    ('Saucisse', '2025-01-01 00:00', 20, 'G'),
-    ('Huile', '2025-01-01 00:00', 10000, 'L'),
-    ('Oeuf', '2025-01-01 00:00', 1000, 'U'),
-    ('Pain', '2025-01-01 00:00', 1000, 'U');
+INSERT INTO Ingredient (name, unit_price, unit,  update_datetime) VALUES
+    ('Saucisse', 20, 'G', '2025-01-01 00:00'),
+    ('Huile', 10000, 'L', '2025-01-01 00:00'),
+    ('Oeuf',1000, 'U', '2025-01-01 00:00'),
+    ('Pain', 1000, 'U', '2025-01-01 00:00');
