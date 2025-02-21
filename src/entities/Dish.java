@@ -1,7 +1,6 @@
 package entities;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class Dish {
@@ -9,14 +8,8 @@ public class Dish {
     private String name;
     private double unitPrice;
     private List<Ingredient> ingredients;
-    private Map<Ingredient, Double> requiredQuantities;
 
-    public Dish(int id, String name, double unitPrice, List<Ingredient> ingredients, Map<Ingredient, Double> requiredQuantities) {
-        this.id = id;
-        this.name = name;
-        this.unitPrice = unitPrice;
-        this.ingredients = ingredients;
-        this.requiredQuantities = requiredQuantities;
+    public Dish() {
     }
 
     public int getId() {
@@ -51,12 +44,10 @@ public class Dish {
         this.ingredients = ingredients;
     }
 
-    public Map<Ingredient, Double> getRequiredQuantities() {
-        return requiredQuantities;
-    }
-
-    public void setRequiredQuantities(Map<Ingredient, Double> requiredQuantities) {
-        this.requiredQuantities = requiredQuantities;
+    public double getIngredientCost() {
+        return ingredients.stream()
+                .mapToDouble(ingredient -> ingredient.getUnitPrice() * ingredient.getRequiredQuantity())
+                .sum();
     }
 
     @Override
@@ -66,7 +57,6 @@ public class Dish {
                 ", name='" + name + '\'' +
                 ", unitPrice=" + unitPrice +
                 ", ingredients=" + ingredients +
-                ", requiredQuantities=" + requiredQuantities +
                 '}';
     }
 
@@ -74,11 +64,11 @@ public class Dish {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Dish dish = (Dish) o;
-        return id == dish.id && Double.compare(unitPrice, dish.unitPrice) == 0 && Objects.equals(name, dish.name) && Objects.equals(ingredients, dish.ingredients) && Objects.equals(requiredQuantities, dish.requiredQuantities);
+        return id == dish.id && Double.compare(unitPrice, dish.unitPrice) == 0 && Objects.equals(name, dish.name) && Objects.equals(ingredients, dish.ingredients);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, unitPrice, ingredients, requiredQuantities);
+        return Objects.hash(id, name, unitPrice, ingredients);
     }
 }

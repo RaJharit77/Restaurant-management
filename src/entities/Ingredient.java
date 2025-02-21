@@ -9,13 +9,9 @@ public class Ingredient {
     private double unitPrice;
     private Unit unit;
     private LocalDateTime updateDateTime;
+    private double requiredQuantity;
 
-    public Ingredient(int id, String name, double unitPrice, Unit unit, LocalDateTime updateDateTime) {
-        this.id = id;
-        this.name = name;
-        this.unitPrice = unitPrice;
-        this.unit = unit;
-        this.updateDateTime = updateDateTime;
+    public Ingredient() {
     }
 
     public int getId() {
@@ -58,6 +54,14 @@ public class Ingredient {
         this.updateDateTime = updateDateTime;
     }
 
+    public double getRequiredQuantity() {
+        return requiredQuantity;
+    }
+
+    public void setRequiredQuantity(double requiredQuantity) {
+        this.requiredQuantity = requiredQuantity;
+    }
+
     @Override
     public String toString() {
         return "Ingredient{" +
@@ -66,6 +70,7 @@ public class Ingredient {
                 ", unitPrice=" + unitPrice +
                 ", unit=" + unit +
                 ", updateDateTime=" + updateDateTime +
+                ", requiredQuantity=" + requiredQuantity +
                 '}';
     }
 
@@ -73,11 +78,11 @@ public class Ingredient {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Ingredient that = (Ingredient) o;
-        return id == that.id && Double.compare(unitPrice, that.unitPrice) == 0 && Objects.equals(name, that.name) && unit == that.unit && Objects.equals(updateDateTime, that.updateDateTime);
+        return id == that.id && Double.compare(unitPrice, that.unitPrice) == 0 && Double.compare(requiredQuantity, that.requiredQuantity) == 0 && Objects.equals(name, that.name) && unit == that.unit && Objects.equals(updateDateTime, that.updateDateTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, unitPrice, unit, updateDateTime);
+        return Objects.hash(id, name, unitPrice, unit, updateDateTime, requiredQuantity);
     }
 }
