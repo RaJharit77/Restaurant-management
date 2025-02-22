@@ -24,13 +24,11 @@ public class DishDAOImpl implements DishDAO {
             statement.setDouble(2, dish.getUnitPrice());
             statement.executeUpdate();
 
-            // Récupérer l'ID généré pour le plat
             ResultSet generatedKeys = statement.getGeneratedKeys();
             if (generatedKeys.next()) {
                 dish.setId(generatedKeys.getInt(1));
             }
 
-            // Insérer les relations dans Dish_Ingredient
             if (dish.getIngredients() != null) {
                 for (Ingredient ingredient : dish.getIngredients()) {
                     String dishIngredientQuery = "INSERT INTO Dish_Ingredient (dish_id, ingredient_id, quantity, unit) VALUES (?, ?, ?, ?::unit_type)";
@@ -44,7 +42,7 @@ public class DishDAOImpl implements DishDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Erreur lors de la création du plat", e);
+            throw new RuntimeException("Error creating dish", e);
         }
     }
 
@@ -64,7 +62,7 @@ public class DishDAOImpl implements DishDAO {
                 return dish;
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Erreur lors de la récupération du plat", e);
+            throw new RuntimeException("Error retrieving the dish", e);
         }
         return null;
     }
@@ -79,7 +77,7 @@ public class DishDAOImpl implements DishDAO {
             statement.setInt(3, dish.getId());
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Erreur lors de la mise à jour du plat", e);
+            throw new RuntimeException("Error updating dish", e);
         }
     }
 
@@ -91,7 +89,7 @@ public class DishDAOImpl implements DishDAO {
             statement.setInt(1, id);
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Erreur lors de la suppression du plat", e);
+            throw new RuntimeException("Error deleting dish", e);
         }
     }
 
@@ -119,7 +117,7 @@ public class DishDAOImpl implements DishDAO {
                 ingredients.add(ingredient);
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Erreur lors de la récupération des ingrédients", e);
+            throw new RuntimeException("Error retrieving ingredients", e);
         }
 
         return ingredients;

@@ -86,11 +86,9 @@ public class IngredientDAOImpl implements IngredientDAO {
 
     @Override
     public List<Ingredient> filterIngredients(String name, Unit unit, Double minPrice, Double maxPrice, int page, int pageSize) {
-        // Construction de la requête SQL de base
         String query = "SELECT * FROM Ingredient WHERE 1=1";
         List<Object> parameters = new ArrayList<>();
 
-        // Ajout des filtres dynamiques
         if (name != null && !name.isEmpty()) {
             query += " AND name ILIKE ?";
             parameters.add("%" + name + "%");
@@ -108,22 +106,19 @@ public class IngredientDAOImpl implements IngredientDAO {
             parameters.add(maxPrice);
         }
 
-        // Ajout de la pagination
         query += " LIMIT ? OFFSET ?";
         parameters.add(pageSize);
-        parameters.add((page - 1) * pageSize); // Correction de l'offset
+        parameters.add((page - 1) * pageSize);
 
         List<Ingredient> ingredients = new ArrayList<>();
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
 
-            // Remplissage des paramètres de la requête
             for (int i = 0; i < parameters.size(); i++) {
                 statement.setObject(i + 1, parameters.get(i));
             }
 
-            // Exécution de la requête
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Ingredient ingredient = new Ingredient(
@@ -132,12 +127,12 @@ public class IngredientDAOImpl implements IngredientDAO {
                         resultSet.getDouble("unit_price"),
                         Unit.valueOf(resultSet.getString("unit")),
                         resultSet.getTimestamp("update_datetime").toLocalDateTime(),
-                        0 // La colonne quantity n'est pas nécessaire ici
+                        0
                 );
                 ingredients.add(ingredient);
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Erreur lors du filtrage des ingrédients", e);
+            throw new RuntimeException("Error filtering ingredients", e);
         }
 
         return ingredients;
