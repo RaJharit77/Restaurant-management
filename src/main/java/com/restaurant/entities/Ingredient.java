@@ -15,6 +15,9 @@ public class Ingredient {
     private LocalDateTime updateDateTime;
     private double requiredQuantity;
 
+    public Ingredient() {
+    }
+
     public Ingredient(int id, String name, double unitPrice, Unit unit, LocalDateTime updateDateTime, double requiredQuantity) {
         this.id = id;
         this.name = name;
@@ -22,8 +25,5 @@ public class Ingredient {
         this.unit = unit;
         this.updateDateTime = updateDateTime;
         this.requiredQuantity = requiredQuantity;
-    }
-
-    public Ingredient() {
     }
 }

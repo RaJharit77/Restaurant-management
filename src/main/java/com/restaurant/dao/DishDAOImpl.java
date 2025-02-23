@@ -9,41 +9,34 @@ import java.sql.*;
 import java.util.*;
 
 public class DishDAOImpl implements DishDAO {
-    private DataSource dataSource;
+    private final DataSource dataSource;
 
     public DishDAOImpl(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
     @Override
-    public void createDish(Dish dish) {
-        String query = "INSERT INTO Dish (name, unit_price) VALUES (?, ?)";
+    public List<Dish> getAll() {
+        String query = "SELECT * FROM Dish";
+        List<Dish> dishes = new ArrayList<>();
+
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1, dish.getName());
-            statement.setDouble(2, dish.getUnitPrice());
-            statement.executeUpdate();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
 
-            ResultSet generatedKeys = statement.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                dish.setId(generatedKeys.getInt(1));
-            }
-
-            if (dish.getIngredients() != null) {
-                for (Ingredient ingredient : dish.getIngredients()) {
-                    String dishIngredientQuery = "INSERT INTO Dish_Ingredient (dish_id, ingredient_id, quantity, unit) VALUES (?, ?, ?, ?::unit_type)";
-                    try (PreparedStatement dishIngredientStatement = connection.prepareStatement(dishIngredientQuery)) {
-                        dishIngredientStatement.setInt(1, dish.getId());
-                        dishIngredientStatement.setInt(2, ingredient.getId());
-                        dishIngredientStatement.setDouble(3, ingredient.getRequiredQuantity());
-                        dishIngredientStatement.setString(4, ingredient.getUnit().name());
-                        dishIngredientStatement.executeUpdate();
-                    }
-                }
+            while (resultSet.next()) {
+                Dish dish = new Dish();
+                dish.setId(resultSet.getInt("id"));
+                dish.setName(resultSet.getString("name"));
+                dish.setUnitPrice(resultSet.getDouble("unit_price"));
+                dish.setIngredients(getIngredientsForDish(dish.getId()));
+                dishes.add(dish);
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error creating dish", e);
+            throw new RuntimeException("Error retrieving all dishes", e);
         }
+
+        return dishes;
     }
 
     @Override
@@ -68,17 +61,61 @@ public class DishDAOImpl implements DishDAO {
     }
 
     @Override
-    public void updateDish(Dish dish) {
-        String query = "UPDATE Dish SET name = ?, unit_price = ? WHERE id = ?";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, dish.getName());
-            statement.setDouble(2, dish.getUnitPrice());
-            statement.setInt(3, dish.getId());
-            statement.executeUpdate();
+    public List<Dish> saveAll(List<Dish> dishes) {
+        String insertQuery = "INSERT INTO Dish (name, unit_price) VALUES (?, ?)";
+        String updateQuery = "UPDATE Dish SET name = ?, unit_price = ? WHERE id = ?";
+        String dishIngredientQuery = "INSERT INTO Dish_Ingredient (dish_id, ingredient_id, quantity, unit) VALUES (?, ?, ?, ?::unit_type) "
+                + "ON CONFLICT (dish_id, ingredient_id) DO UPDATE SET quantity = EXCLUDED.quantity, unit = EXCLUDED.unit";
+
+        try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
+
+            try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+                 PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
+                 PreparedStatement dishIngredientStatement = connection.prepareStatement(dishIngredientQuery)) {
+
+                for (Dish dish : dishes) {
+                    if (dish.getId() == 0) {
+                        // Insert a new dish
+                        insertStatement.setString(1, dish.getName());
+                        insertStatement.setDouble(2, dish.getUnitPrice());
+                        insertStatement.executeUpdate();
+
+                        // Retrieve the generated ID for the newly inserted dish
+                        ResultSet generatedKeys = insertStatement.getGeneratedKeys();
+                        if (generatedKeys.next()) {
+                            dish.setId(generatedKeys.getInt(1)); // Set the dish ID
+                        }
+                    } else {
+                        // Update an existing dish
+                        updateStatement.setString(1, dish.getName());
+                        updateStatement.setDouble(2, dish.getUnitPrice());
+                        updateStatement.setInt(3, dish.getId());
+                        updateStatement.executeUpdate();
+                    }
+
+                    // Insert or update the ingredients for the dish
+                    if (dish.getIngredients() != null) {
+                        for (Ingredient ingredient : dish.getIngredients()) {
+                            dishIngredientStatement.setInt(1, dish.getId());
+                            dishIngredientStatement.setInt(2, ingredient.getId());
+                            dishIngredientStatement.setDouble(3, ingredient.getRequiredQuantity());
+                            dishIngredientStatement.setString(4, ingredient.getUnit().name());
+                            dishIngredientStatement.executeUpdate();
+                        }
+                    }
+                }
+
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+                throw new RuntimeException("Error saving dishes", e);
+            }
         } catch (SQLException e) {
-            throw new RuntimeException("Error updating dish", e);
+            throw new RuntimeException("Error managing database connection", e);
         }
+
+        return dishes;
     }
 
     @Override
@@ -91,6 +128,59 @@ public class DishDAOImpl implements DishDAO {
         } catch (SQLException e) {
             throw new RuntimeException("Error deleting dish", e);
         }
+    }
+
+    @Override
+    public List<Dish> filterDish(String name, double unitPrice, List<Ingredient> dishIngredients) {
+        StringBuilder query = new StringBuilder("SELECT DISTINCT d.id, d.name, d.unit_price FROM Dish d WHERE 1=1");
+        List<Object> parameters = new ArrayList<>();
+
+        if (name != null && !name.trim().isEmpty()) {
+            query.append(" AND d.name ILIKE ?");
+            parameters.add("%" + name.trim() + "%");
+        }
+
+        if (unitPrice > 0) {
+            query.append(" AND d.unit_price <= ?");
+            parameters.add(unitPrice);
+        }
+
+        if (dishIngredients != null && !dishIngredients.isEmpty()) {
+            query.append(" AND d.id IN (SELECT di.dish_id FROM Dish_Ingredient di WHERE di.ingredient_id IN (");
+            String placeholders = String.join(",", Collections.nCopies(dishIngredients.size(), "?"));
+            query.append(placeholders).append(") GROUP BY di.dish_id HAVING COUNT(DISTINCT di.ingredient_id) = ?)");
+
+            for (Ingredient ingredient : dishIngredients) {
+                parameters.add(ingredient.getId());
+            }
+            parameters.add(dishIngredients.size());
+        }
+
+        query.append(" LIMIT 50");
+
+        List<Dish> dishes = new ArrayList<>();
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query.toString())) {
+
+            for (int i = 0; i < parameters.size(); i++) {
+                statement.setObject(i + 1, parameters.get(i));
+            }
+
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Dish dish = new Dish();
+                dish.setId(resultSet.getInt("id"));
+                dish.setName(resultSet.getString("name"));
+                dish.setUnitPrice(resultSet.getDouble("unit_price"));
+                dish.setIngredients(getIngredientsForDish(dish.getId()));
+                dishes.add(dish);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error filtering dishes", e);
+        }
+
+        return dishes;
     }
 
     private List<Ingredient> getIngredientsForDish(int dishId) {

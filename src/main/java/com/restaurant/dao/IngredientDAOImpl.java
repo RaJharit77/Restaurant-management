@@ -8,30 +8,37 @@ import java.sql.*;
 import java.util.*;
 
 public class IngredientDAOImpl implements IngredientDAO {
-    private DataSource dataSource;
+    private final DataSource dataSource;
 
     public IngredientDAOImpl(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
     @Override
-    public void createIngredient(Ingredient ingredient) {
-        String query = "INSERT INTO Ingredient (name, unit_price, unit, update_datetime) VALUES (?, ?, ?::unit_type, ?)";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1, ingredient.getName());
-            statement.setDouble(2, ingredient.getUnitPrice());
-            statement.setString(3, ingredient.getUnit().name());
-            statement.setTimestamp(4, java.sql.Timestamp.valueOf(ingredient.getUpdateDateTime()));
-            statement.executeUpdate();
+    public List<Ingredient> getAll() {
+        String query = "SELECT * FROM Ingredient";
+        List<Ingredient> ingredients = new ArrayList<>();
 
-            ResultSet generatedKeys = statement.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                ingredient.setId(generatedKeys.getInt(1));
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                Ingredient ingredient = new Ingredient(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getDouble("unit_price"),
+                        Unit.valueOf(resultSet.getString("unit")),
+                        resultSet.getTimestamp("update_datetime").toLocalDateTime(),
+                        0
+                );
+                ingredients.add(ingredient);
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Erreur lors de la création de l'ingrédient", e);
+            throw new RuntimeException("Error retrieving all ingredients", e);
         }
+
+        return ingredients;
     }
 
     @Override
@@ -51,25 +58,54 @@ public class IngredientDAOImpl implements IngredientDAO {
                 return ingredient;
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Erreur lors de la récupération de l'ingrédient", e);
+            throw new RuntimeException("Error retrieving ingredient", e);
         }
         return null;
     }
 
     @Override
-    public void updateIngredient(Ingredient ingredient) {
-        String query = "UPDATE Ingredient SET name = ?, unit_price = ?, unit = ?::unit_type, update_datetime = ? WHERE id = ?";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, ingredient.getName());
-            statement.setDouble(2, ingredient.getUnitPrice());
-            statement.setString(3, ingredient.getUnit().name()); // Conversion en unit_type
-            statement.setTimestamp(4, java.sql.Timestamp.valueOf(ingredient.getUpdateDateTime()));
-            statement.setInt(5, ingredient.getId());
-            statement.executeUpdate();
+    public List<Ingredient> saveAll(List<Ingredient> ingredients) {
+        String insertQuery = "INSERT INTO Ingredient (name, unit_price, unit, update_datetime) VALUES (?, ?, ?::unit_type, ?)";
+        String updateQuery = "UPDATE Ingredient SET name = ?, unit_price = ?, unit = ?::unit_type, update_datetime = ? WHERE id = ?";
+
+        try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
+
+            try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+                 PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
+
+                for (Ingredient ingredient : ingredients) {
+                    if (ingredient.getId() == 0) {
+                        insertStatement.setString(1, ingredient.getName());
+                        insertStatement.setDouble(2, ingredient.getUnitPrice());
+                        insertStatement.setString(3, ingredient.getUnit().name());
+                        insertStatement.setTimestamp(4, java.sql.Timestamp.valueOf(ingredient.getUpdateDateTime()));
+                        insertStatement.executeUpdate();
+
+                        ResultSet generatedKeys = insertStatement.getGeneratedKeys();
+                        if (generatedKeys.next()) {
+                            ingredient.setId(generatedKeys.getInt(1));
+                        }
+                    } else {
+                        updateStatement.setString(1, ingredient.getName());
+                        updateStatement.setDouble(2, ingredient.getUnitPrice());
+                        updateStatement.setString(3, ingredient.getUnit().name());
+                        updateStatement.setTimestamp(4, java.sql.Timestamp.valueOf(ingredient.getUpdateDateTime()));
+                        updateStatement.setInt(5, ingredient.getId());
+                        updateStatement.executeUpdate();
+                    }
+                }
+
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+                throw new RuntimeException("Error saving ingredients", e);
+            }
         } catch (SQLException e) {
-            throw new RuntimeException("Erreur lors de la mise à jour de l'ingrédient", e);
+            throw new RuntimeException("Error managing database connection", e);
         }
+
+        return ingredients;
     }
 
     @Override

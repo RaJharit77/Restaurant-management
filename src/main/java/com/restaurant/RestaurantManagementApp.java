@@ -19,13 +19,13 @@ public class RestaurantManagementApp {
         IngredientDAO ingredientDAO = new IngredientDAOImpl(dataSource);
 
         Ingredient sausage = new Ingredient(1, "Saucisse", 20, Unit.G, LocalDateTime.now(), 100);
-        ingredientDAO.createIngredient(sausage);
+        ingredientDAO.saveAll(List.of(sausage));
 
         Dish hotDog = new Dish();
         hotDog.setName("Hot Dog");
         hotDog.setUnitPrice(15000);
         hotDog.setIngredients(List.of(sausage));
-        dishDAO.createDish(hotDog);
+        dishDAO.saveAll(List.of(hotDog));
 
         Dish retrievedDish = dishDAO.findById(hotDog.getId());
 

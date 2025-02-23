@@ -23,36 +23,18 @@ class IngredientTest {
     }
 
     @Test
-    void testCreateAndFindById() {
-        Ingredient ingredient = new Ingredient();
-        ingredient.setName("Tomate");
-        ingredient.setUnitPrice(500);
-        ingredient.setUnit(Unit.G);
-        ingredient.setUpdateDateTime(LocalDateTime.now());
+    void testSaveAllAndGetAllIngredients() {
+        Ingredient ingredient1 = new Ingredient(0, "Tomate", 500, Unit.G, LocalDateTime.now(), 0);
+        Ingredient ingredient2 = new Ingredient(0, "Oignon", 300, Unit.G, LocalDateTime.now(), 0);
 
-        ingredientDAO.createIngredient(ingredient);
+        List<Ingredient> savedIngredients = ingredientDAO.saveAll(List.of(ingredient1, ingredient2));
+        assertNotNull(savedIngredients);
+        assertEquals(2, savedIngredients.size());
 
-        Ingredient foundIngredient = ingredientDAO.findById(ingredient.getId());
-        assertNotNull(foundIngredient, "L'ingrédient n'a pas été trouvé");
-        assertEquals("Tomate", foundIngredient.getName(), "Le nom de l'ingrédient ne correspond pas");
-    }
-
-    @Test
-    void testUpdateIngredient() {
-        Ingredient ingredient = new Ingredient();
-        ingredient.setName("Oignon");
-        ingredient.setUnitPrice(300);
-        ingredient.setUnit(Unit.G);
-        ingredient.setUpdateDateTime(LocalDateTime.now());
-
-        ingredientDAO.createIngredient(ingredient);
-
-        ingredient.setUnitPrice(400);
-        ingredientDAO.updateIngredient(ingredient);
-
-        Ingredient updatedIngredient = ingredientDAO.findById(ingredient.getId());
-        assertNotNull(updatedIngredient, "L'ingrédient n'a pas été trouvé");
-        assertEquals(400, updatedIngredient.getUnitPrice(), "Le prix de l'ingrédient n'a pas été mis à jour");
+        List<Ingredient> allIngredients = ingredientDAO.getAll();
+        assertFalse(allIngredients.isEmpty());
+        assertTrue(allIngredients.stream().anyMatch(i -> i.getName().equals("Tomate")));
+        assertTrue(allIngredients.stream().anyMatch(i -> i.getName().equals("Oignon")));
     }
 
     @Test
@@ -63,7 +45,7 @@ class IngredientTest {
         ingredient.setUnit(Unit.G);
         ingredient.setUpdateDateTime(LocalDateTime.now());
 
-        ingredientDAO.createIngredient(ingredient);
+        ingredientDAO.saveAll(List.of(ingredient));
 
         ingredientDAO.deleteIngredient(ingredient.getId());
 
@@ -78,14 +60,14 @@ class IngredientTest {
         ingredient1.setUnitPrice(500);
         ingredient1.setUnit(Unit.G);
         ingredient1.setUpdateDateTime(LocalDateTime.now());
-        ingredientDAO.createIngredient(ingredient1);
+        ingredientDAO.saveAll(List.of(ingredient1));
 
         Ingredient ingredient2 = new Ingredient();
         ingredient2.setName("Oignon");
         ingredient2.setUnitPrice(300);
         ingredient2.setUnit(Unit.G);
         ingredient2.setUpdateDateTime(LocalDateTime.now());
-        ingredientDAO.createIngredient(ingredient2);
+        ingredientDAO.saveAll(List.of(ingredient2));
 
         List<Ingredient> ingredients = ingredientDAO.filterIngredients("o", Unit.G, 100.0, 1000.0, 1, 10);
         assertFalse(ingredients.isEmpty(), "Aucun ingrédient trouvé");

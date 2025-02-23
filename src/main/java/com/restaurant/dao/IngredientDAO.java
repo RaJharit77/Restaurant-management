@@ -6,11 +6,11 @@ import com.restaurant.entities.Unit;
 import java.util.List;
 
 public interface IngredientDAO {
-    void createIngredient(Ingredient ingredient);
+    List<Ingredient> getAll();
 
     Ingredient findById(int id);
 
-    void updateIngredient(Ingredient ingredient);
+    List<Ingredient> saveAll(List<Ingredient> ingredients);
 
     void deleteIngredient(int id);
 
