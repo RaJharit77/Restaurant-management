@@ -14,8 +14,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 class DishIngredientTest {
@@ -111,14 +109,14 @@ class DishIngredientTest {
         Ingredient cheese = new Ingredient(4, "Cheese", 700, Unit.G, LocalDateTime.now(), 150);
         ingredientDAO.saveAll(List.of(tomato, cheese));
 
-        Dish salad = new Dish();
-        salad.setName("Salade");
-        salad.setUnitPrice(5000);
-        salad.setIngredients(List.of(tomato, cheese));
-        dishDAO.saveAll(List.of(salad));
+        Dish hamburger = new Dish();
+        hamburger.setName("Hamburger");
+        hamburger.setUnitPrice(5000);
+        hamburger.setIngredients(List.of(tomato, cheese));
+        dishDAO.saveAll(List.of(hamburger));
 
-        List<Dish> results = dishDAO.filterDish("Salade", 5000, List.of(tomato, cheese));
+        List<Dish> results = dishDAO.filterDish("Hamburger", 5000, List.of(tomato, cheese));
         assertFalse(results.isEmpty(), "Results should not be empty");
-        assertTrue(results.stream().anyMatch(d -> d.getName().equals("Salade")), "Salade should be in results");
+        assertTrue(results.stream().anyMatch(d -> d.getName().equals("Hamburger")), "Hamburger should be in results");
     }
 }
