@@ -104,4 +104,21 @@ class DishIngredientTest {
         assertFalse(results.isEmpty(), "Results should not be empty");
         assertTrue(results.stream().anyMatch(d -> d.getName().equals("Salade")), "Salade should be in results");
     }
+
+    @Test
+    void testFilterDishByAllCriteria() {
+        Ingredient tomato = new Ingredient(3, "Tomato", 500, Unit.G, LocalDateTime.now(), 200);
+        Ingredient cheese = new Ingredient(4, "Cheese", 700, Unit.G, LocalDateTime.now(), 150);
+        ingredientDAO.saveAll(List.of(tomato, cheese));
+
+        Dish salad = new Dish();
+        salad.setName("Salade");
+        salad.setUnitPrice(5000);
+        salad.setIngredients(List.of(tomato, cheese));
+        dishDAO.saveAll(List.of(salad));
+
+        List<Dish> results = dishDAO.filterDish("Salade", 5000, List.of(tomato, cheese));
+        assertFalse(results.isEmpty(), "Results should not be empty");
+        assertTrue(results.stream().anyMatch(d -> d.getName().equals("Salade")), "Salade should be in results");
+    }
 }
