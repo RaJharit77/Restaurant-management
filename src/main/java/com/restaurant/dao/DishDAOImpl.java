@@ -81,20 +81,17 @@ public class DishDAOImpl implements DishDAO {
                         insertStatement.setDouble(2, dish.getUnitPrice());
                         insertStatement.executeUpdate();
 
-                        // Retrieve the generated ID for the newly inserted dish
                         ResultSet generatedKeys = insertStatement.getGeneratedKeys();
                         if (generatedKeys.next()) {
-                            dish.setId(generatedKeys.getInt(1)); // Set the dish ID
+                            dish.setId(generatedKeys.getInt(1));
                         }
                     } else {
-                        // Update an existing dish
                         updateStatement.setString(1, dish.getName());
                         updateStatement.setDouble(2, dish.getUnitPrice());
                         updateStatement.setInt(3, dish.getId());
                         updateStatement.executeUpdate();
                     }
 
-                    // Insert or update the ingredients for the dish
                     if (dish.getIngredients() != null) {
                         for (Ingredient ingredient : dish.getIngredients()) {
                             dishIngredientStatement.setInt(1, dish.getId());
