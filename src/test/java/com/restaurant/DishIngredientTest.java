@@ -116,6 +116,7 @@ class DishIngredientTest {
         dishDAO.saveAll(List.of(hamburger));
 
         List<Dish> results = dishDAO.filterDish("Hamburger", 5000, List.of(tomato, cheese));
+
         assertFalse(results.isEmpty(), "Results should not be empty");
         assertTrue(results.stream().anyMatch(d -> d.getName().equals("Hamburger")), "Hamburger should be in results");
     }
