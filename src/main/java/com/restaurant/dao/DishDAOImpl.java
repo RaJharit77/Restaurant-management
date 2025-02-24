@@ -76,7 +76,6 @@ public class DishDAOImpl implements DishDAO {
 
                 for (Dish dish : dishes) {
                     if (dish.getId() == 0) {
-                        // Insert a new dish
                         insertStatement.setString(1, dish.getName());
                         insertStatement.setDouble(2, dish.getUnitPrice());
                         insertStatement.executeUpdate();
