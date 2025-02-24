@@ -15,4 +15,6 @@ public interface DishDAO {
     void deleteDish(int id);
 
     List<Dish> filterDish(String name, double unitPrice, List<Ingredient> dishIngredient);
+
+    List<Ingredient> getIngredientsForDish(int dishId);
 }

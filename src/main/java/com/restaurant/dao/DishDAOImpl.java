@@ -180,11 +180,13 @@ public class DishDAOImpl implements DishDAO {
         return dishes;
     }
 
-    private List<Ingredient> getIngredientsForDish(int dishId) {
+    @Override
+    public List<Ingredient> getIngredientsForDish(int dishId) {
         String query = "SELECT i.id, i.name, i.unit_price, i.unit, i.update_datetime, di.quantity " +
                 "FROM Ingredient i " +
                 "JOIN Dish_Ingredient di ON i.id = di.ingredient_id " +
                 "WHERE di.dish_id = ?";
+
         List<Ingredient> ingredients = new ArrayList<>();
 
         try (Connection connection = dataSource.getConnection();
