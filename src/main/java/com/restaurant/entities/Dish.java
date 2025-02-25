@@ -1,5 +1,6 @@
 package com.restaurant.entities;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.*;
 
@@ -24,8 +25,20 @@ public class Dish {
     }
 
     public double getIngredientCost() {
+        return getIngredientCostAtDate(LocalDateTime.now());
+    }
+
+    public double getIngredientCostAtDate(LocalDateTime date) {
         return ingredients.stream()
-                .mapToDouble(di -> di.getRequiredQuantity() * di.getUnitPrice())
+                .mapToDouble(di -> di.getRequiredQuantity() * di.getPriceAtDate(date))
                 .sum();
+    }
+
+    public double getGrossMargin() {
+        return getGrossMarginAtDate(LocalDateTime.now());
+    }
+
+    public double getGrossMarginAtDate(LocalDateTime date) {
+        return unitPrice - getIngredientCostAtDate(date);
     }
 }

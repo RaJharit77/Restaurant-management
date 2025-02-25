@@ -76,4 +76,41 @@ class DishTest {
         Dish deletedDish = dishDAO.findById(dish.getId());
         assertNull(deletedDish);
     }
+
+    @Test
+    void testGetGrossMargin() {
+        Ingredient sausage = new Ingredient(1, "Saucisse", 20, Unit.G, LocalDateTime.now(), 100);
+        Ingredient oil = new Ingredient(2, "Huile", 10000, Unit.L, LocalDateTime.now(), 0.15);
+        ingredientDAO.saveAll(List.of(sausage, oil));
+
+        Dish hotDog = new Dish();
+        hotDog.setName("Hot Dog");
+        hotDog.setUnitPrice(15000);
+        hotDog.setIngredients(List.of(sausage, oil));
+        dishDAO.saveAll(List.of(hotDog));
+
+        double expectedCost = (100 * 20) + (0.15 * 10000);
+        double expectedMargin = 15000 - expectedCost;
+        assertEquals(expectedMargin, hotDog.getGrossMargin());
+    }
+
+    @Test
+    void testGetGrossMarginAtDate() {
+        LocalDateTime pastDate = LocalDateTime.of(2023, 10, 5, 10, 0);
+        Ingredient sausage = new Ingredient(1, "Saucisse", 20, Unit.G, LocalDateTime.now(), 100);
+        sausage.addPriceHistory(18.0, pastDate);
+        Ingredient oil = new Ingredient(2, "Huile", 10000, Unit.L, LocalDateTime.now(), 0.15);
+        oil.addPriceHistory(9500, pastDate);
+        ingredientDAO.saveAll(List.of(sausage, oil));
+
+        Dish hotDog = new Dish();
+        hotDog.setName("Hot Dog");
+        hotDog.setUnitPrice(15000);
+        hotDog.setIngredients(List.of(sausage, oil));
+        dishDAO.saveAll(List.of(hotDog));
+
+        double expectedCostAtPastDate = (100 * 18.0) + (0.15 * 9500);
+        double expectedMarginAtPastDate = 15000 - expectedCostAtPastDate;
+        assertEquals(expectedMarginAtPastDate, hotDog.getGrossMarginAtDate(pastDate));
+    }
 }

@@ -26,7 +26,7 @@ public class DishDAOImpl implements DishDAO {
 
             while (resultSet.next()) {
                 Dish dish = new Dish();
-                dish.setId(resultSet.getInt("id"));
+                dish.setId(resultSet.getInt("dish_id"));
                 dish.setName(resultSet.getString("name"));
                 dish.setUnitPrice(resultSet.getDouble("unit_price"));
                 dish.setIngredients(getIngredientsForDish(dish.getId()));
@@ -41,14 +41,14 @@ public class DishDAOImpl implements DishDAO {
 
     @Override
     public Dish findById(int id) {
-        String query = "SELECT * FROM Dish WHERE id = ?";
+        String query = "SELECT * FROM Dish WHERE dish_id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 Dish dish = new Dish();
-                dish.setId(resultSet.getInt("id"));
+                dish.setId(resultSet.getInt("dish_id"));
                 dish.setName(resultSet.getString("name"));
                 dish.setUnitPrice(resultSet.getDouble("unit_price"));
                 dish.setIngredients(getIngredientsForDish(id));
@@ -128,7 +128,7 @@ public class DishDAOImpl implements DishDAO {
 
     @Override
     public List<Dish> filterDish(String name, double unitPrice, List<Ingredient> dishIngredients) {
-        StringBuilder query = new StringBuilder("SELECT DISTINCT d.id, d.name, d.unit_price FROM Dish d WHERE 1=1");
+        StringBuilder query = new StringBuilder("SELECT DISTINCT d.dish_id, d.name, d.unit_price FROM Dish d WHERE 1=1");
         List<Object> parameters = new ArrayList<>();
 
         if (name != null && !name.trim().isEmpty()) {
@@ -166,7 +166,7 @@ public class DishDAOImpl implements DishDAO {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Dish dish = new Dish();
-                dish.setId(resultSet.getInt("id"));
+                dish.setId(resultSet.getInt("dish_id"));
                 dish.setName(resultSet.getString("name"));
                 dish.setUnitPrice(resultSet.getDouble("unit_price"));
                 dish.setIngredients(getIngredientsForDish(dish.getId()));
@@ -179,9 +179,8 @@ public class DishDAOImpl implements DishDAO {
         return dishes;
     }
 
-    @Override
-    public List<Ingredient> getIngredientsForDish(int dishId) {
-        String query = "SELECT i.id, i.name, i.unit_price, i.unit, i.update_datetime, di.quantity " +
+    private List<Ingredient> getIngredientsForDish(int dishId) {
+        String query = "SELECT i.ingrdient_id, i.name, i.unit_price, i.unit, i.update_datetime, di.quantity " +
                 "FROM Ingredient i " +
                 "JOIN Dish_Ingredient di ON i.id = di.ingredient_id " +
                 "WHERE di.dish_id = ?";
@@ -195,7 +194,7 @@ public class DishDAOImpl implements DishDAO {
 
             while (resultSet.next()) {
                 Ingredient ingredient = new Ingredient(
-                        resultSet.getInt("id"),
+                        resultSet.getInt("dish_id"),
                         resultSet.getString("name"),
                         resultSet.getDouble("unit_price"),
                         Unit.valueOf(resultSet.getString("unit")),

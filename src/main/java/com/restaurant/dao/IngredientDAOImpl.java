@@ -1,6 +1,7 @@
 package com.restaurant.dao;
 
 import com.restaurant.entities.Ingredient;
+import com.restaurant.entities.PriceHistory;
 import com.restaurant.entities.Unit;
 import com.restaurant.db.DataSource;
 
@@ -25,7 +26,7 @@ public class IngredientDAOImpl implements IngredientDAO {
 
             while (resultSet.next()) {
                 Ingredient ingredient = new Ingredient(
-                        resultSet.getInt("id"),
+                        resultSet.getInt("ingredient_id"),
                         resultSet.getString("name"),
                         resultSet.getDouble("unit_price"),
                         Unit.valueOf(resultSet.getString("unit")),
@@ -43,14 +44,14 @@ public class IngredientDAOImpl implements IngredientDAO {
 
     @Override
     public Ingredient findById(int id) {
-        String query = "SELECT * FROM Ingredient WHERE id = ?";
+        String query = "SELECT * FROM Ingredient WHERE ingredient_id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 Ingredient ingredient = new Ingredient();
-                ingredient.setId(resultSet.getInt("id"));
+                ingredient.setId(resultSet.getInt("ingredient_id"));
                 ingredient.setName(resultSet.getString("name"));
                 ingredient.setUnitPrice(resultSet.getDouble("unit_price"));
                 ingredient.setUnit(Unit.valueOf(resultSet.getString("unit")));
@@ -66,13 +67,15 @@ public class IngredientDAOImpl implements IngredientDAO {
     @Override
     public List<Ingredient> saveAll(List<Ingredient> ingredients) {
         String insertQuery = "INSERT INTO Ingredient (name, unit_price, unit, update_datetime) VALUES (?, ?, ?::unit_type, ?)";
-        String updateQuery = "UPDATE Ingredient SET name = ?, unit_price = ?, unit = ?::unit_type, update_datetime = ? WHERE id = ?";
+        String updateQuery = "UPDATE Ingredient SET name = ?, unit_price = ?, unit = ?::unit_type, update_datetime = ? WHERE ingredient_id = ?";  // Changé ici
+        String priceHistoryQuery = "INSERT INTO Price_History (ingredient_id, price, date) VALUES (?, ?, ?)";
 
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
 
             try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS);
-                 PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
+                 PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
+                 PreparedStatement priceHistoryStatement = connection.prepareStatement(priceHistoryQuery)) {
 
                 for (Ingredient ingredient : ingredients) {
                     if (ingredient.getId() == 0) {
@@ -94,6 +97,13 @@ public class IngredientDAOImpl implements IngredientDAO {
                         updateStatement.setInt(5, ingredient.getId());
                         updateStatement.executeUpdate();
                     }
+
+                    for (PriceHistory priceHistory : ingredient.getPriceHistory()) {
+                        priceHistoryStatement.setInt(1, ingredient.getId());
+                        priceHistoryStatement.setDouble(2, priceHistory.getPrice());
+                        priceHistoryStatement.setTimestamp(3, java.sql.Timestamp.valueOf(priceHistory.getDate()));
+                        priceHistoryStatement.executeUpdate();
+                    }
                 }
 
                 connection.commit();
@@ -108,9 +118,31 @@ public class IngredientDAOImpl implements IngredientDAO {
         return ingredients;
     }
 
+    private List<PriceHistory> getPriceHistoryForIngredient(int ingredientId) {
+        String query = "SELECT price, date FROM Price_History WHERE ingredient_id = ? ORDER BY date DESC";
+        List<PriceHistory> priceHistory = new ArrayList<>();
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, ingredientId);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                priceHistory.add(new PriceHistory(
+                        resultSet.getDouble("price"),
+                        resultSet.getTimestamp("date").toLocalDateTime()
+                ));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving price history", e);
+        }
+
+        return priceHistory;
+    }
+
     @Override
     public void deleteIngredient(int id) {
-        String query = "DELETE FROM Ingredient WHERE id = ?";
+        String query = "DELETE FROM Ingredient WHERE ingredient_id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
@@ -158,7 +190,7 @@ public class IngredientDAOImpl implements IngredientDAO {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Ingredient ingredient = new Ingredient(
-                        resultSet.getInt("id"),
+                        resultSet.getInt("ingredient_id"),
                         resultSet.getString("name"),
                         resultSet.getDouble("unit_price"),
                         Unit.valueOf(resultSet.getString("unit")),
