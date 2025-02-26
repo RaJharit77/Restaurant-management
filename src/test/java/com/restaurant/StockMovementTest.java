@@ -5,21 +5,35 @@ import com.restaurant.entities.StockMovement;
 import com.restaurant.entities.MovementType;
 import com.restaurant.entities.Unit;
 import com.restaurant.db.DataSource;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class StockMovementTest {
-    private static StockMovementImpl stockMovementImpl;
+public class StockMovementTest {
+    private StockMovementImpl stockMovementImpl;
+    private DataSource dataSource;
 
-    @BeforeAll
-    static void setUp() {
-        DataSource dataSource = new DataSource();
+    @BeforeEach
+    void setUp() {
+        dataSource = new DataSource();
         stockMovementImpl = new StockMovementImpl(dataSource);
+        resetDatabase();
+    }
+
+    private void resetDatabase() {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("DELETE FROM Stock_Movement");
+        } catch (SQLException e) {
+            throw new RuntimeException("Error resetting database", e);
+        }
     }
 
     @Test
