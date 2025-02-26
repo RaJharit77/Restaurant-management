@@ -17,9 +17,11 @@ public class Ingredient {
     private LocalDateTime updateDateTime;
     private double requiredQuantity;
     private List<PriceHistory> priceHistory;
+    private List<StockMovement> stockMovements;
 
     public Ingredient() {
         this.priceHistory = new ArrayList<>();
+        this.stockMovements = new ArrayList<>();
     }
 
     public Ingredient(int id, String name, double unitPrice, Unit unit, LocalDateTime updateDateTime, double requiredQuantity) {
@@ -30,6 +32,7 @@ public class Ingredient {
         this.updateDateTime = updateDateTime;
         this.requiredQuantity = requiredQuantity;
         this.priceHistory = new ArrayList<>();
+        this.stockMovements = new ArrayList<>();
         this.priceHistory.add(new PriceHistory(unitPrice, updateDateTime));
     }
 
@@ -45,5 +48,19 @@ public class Ingredient {
                 .max((ph1, ph2) -> ph1.getDate().compareTo(ph2.getDate()))
                 .map(PriceHistory::getPrice)
                 .orElse(0.0);
+    }
+
+    public double getAvailableQuantity(LocalDateTime date) {
+        double availableQuantity = 0;
+        for (StockMovement movement : stockMovements) {
+            if (movement.getMovementDate().isBefore(date)){
+                if (movement.getMovementType() == MovementType.ENTRY) {
+                    availableQuantity += movement.getQuantity();
+                } else if (movement.getMovementType() == MovementType.EXIT) {
+                    availableQuantity -= movement.getQuantity();
+                }
+            }
+        }
+        return availableQuantity;
     }
 }

@@ -1,4 +1,5 @@
 CREATE TYPE unit_type AS ENUM ('G', 'L', 'U');
+CREATE TYPE movement_type AS ENUM ('ENTRY', 'EXIT');
 
 CREATE TABLE Ingredient (
     ingredient_id SERIAL PRIMARY KEY,
@@ -27,4 +28,13 @@ CREATE TABLE Price_History (
     ingredient_id INT REFERENCES Ingredient(ingredient_id),
     price DOUBLE PRECISION NOT NULL,
     date TIMESTAMP NOT NULL
+);
+
+CREATE TABLE Stock_Movement (
+    movement_id SERIAL PRIMARY KEY,
+    ingredient_id INT REFERENCES Ingredient(ingredient_id),
+    movement_type movement_type NOT NULL,
+    quantity DECIMAL(10, 2) NOT NULL,
+    unit unit_type NOT NULL,
+    movement_date TIMESTAMP NOT NULL
 );

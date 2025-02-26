@@ -2,6 +2,7 @@ package com.restaurant.dao;
 
 import com.restaurant.entities.Ingredient;
 import com.restaurant.entities.PriceHistory;
+import com.restaurant.entities.StockMovement;
 import com.restaurant.entities.Unit;
 import com.restaurant.db.DataSource;
 
@@ -196,6 +197,7 @@ public class IngredientDAOImpl implements IngredientDAO {
                         Unit.valueOf(resultSet.getString("unit")),
                         resultSet.getTimestamp("update_datetime").toLocalDateTime(),
                         0
+
                 );
                 ingredients.add(ingredient);
             }
@@ -204,5 +206,20 @@ public class IngredientDAOImpl implements IngredientDAO {
         }
 
         return ingredients;
+    }
+
+    public void addStockMovement(StockMovement movement) {
+        String query = "INSERT INTO Stock_Movement (ingredient_id, movement_type, quantity, unit, movement_date) VALUES (?, ?::movement_type, ?, ?::unit_type, ?)";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, movement.getIngredientId());
+            statement.setString(2, movement.getMovementType().name());
+            statement.setDouble(3, movement.getQuantity());
+            statement.setString(4, movement.getUnit().name());
+            statement.setTimestamp(5, java.sql.Timestamp.valueOf(movement.getMovementDate()));
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error adding stock movement", e);
+        }
     }
 }

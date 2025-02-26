@@ -3,6 +3,8 @@ package com.restaurant;
 import com.restaurant.dao.IngredientDAO;
 import com.restaurant.dao.IngredientDAOImpl;
 import com.restaurant.entities.Ingredient;
+import com.restaurant.entities.MovementType;
+import com.restaurant.entities.StockMovement;
 import com.restaurant.entities.Unit;
 import com.restaurant.db.DataSource;
 import org.junit.jupiter.api.BeforeAll;
@@ -73,5 +75,16 @@ class IngredientTest {
         assertFalse(ingredients.isEmpty(), "Aucun ingrédient trouvé");
         assertTrue(ingredients.stream().anyMatch(i -> i.getName().contains("Tomate")), "Tomate non trouvé");
         assertTrue(ingredients.stream().anyMatch(i -> i.getName().contains("Oignon")), "Oignon non trouvé");
+    }
+
+    @Test
+    public void testGetAvailableQuantity() {
+        Ingredient oeuf = new Ingredient(1, "Oeuf", 0.20, Unit.U, LocalDateTime.of(2025, 2, 1, 8, 0), 0);
+        oeuf.getStockMovements().add(new StockMovement(1, 1, MovementType.ENTRY, 100, Unit.U, LocalDateTime.of(2025, 2, 1, 8, 0)));
+        oeuf.getStockMovements().add(new StockMovement(2, 1, MovementType.EXIT, 10, Unit.U, LocalDateTime.of(2025, 2, 2, 10, 0)));
+        oeuf.getStockMovements().add(new StockMovement(3, 1, MovementType.EXIT, 10, Unit.U, LocalDateTime.of(2025, 2, 3, 15, 0)));
+
+        LocalDateTime currentDate = LocalDateTime.of(2025, 2, 24, 12, 0);
+        assertEquals(80, oeuf.getAvailableQuantity(currentDate));
     }
 }

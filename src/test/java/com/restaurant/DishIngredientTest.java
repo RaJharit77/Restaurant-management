@@ -1,9 +1,6 @@
 package com.restaurant;
 
-import com.restaurant.dao.DishDAO;
-import com.restaurant.dao.DishDAOImpl;
-import com.restaurant.dao.IngredientDAO;
-import com.restaurant.dao.IngredientDAOImpl;
+import com.restaurant.dao.*;
 import com.restaurant.db.DataSource;
 import com.restaurant.entities.Dish;
 import com.restaurant.entities.Ingredient;
