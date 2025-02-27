@@ -116,7 +116,7 @@ public class DishDAOImpl implements DishDAO {
 
     @Override
     public void deleteDish(int id) {
-        String query = "DELETE FROM Dish WHERE id = ?";
+        String query = "DELETE FROM Dish WHERE dish_id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
@@ -142,7 +142,7 @@ public class DishDAOImpl implements DishDAO {
         }
 
         if (dishIngredients != null && !dishIngredients.isEmpty()) {
-            query.append(" AND d.id IN (SELECT di.dish_id FROM Dish_Ingredient di WHERE di.ingredient_id IN (");
+            query.append(" AND d.dish_id IN (SELECT di.dish_id FROM Dish_Ingredient di WHERE di.ingredient_id IN (");
             String placeholders = String.join(",", Collections.nCopies(dishIngredients.size(), "?"));
             query.append(placeholders).append(") GROUP BY di.dish_id HAVING COUNT(DISTINCT di.ingredient_id) = ?)");
 
@@ -180,9 +180,9 @@ public class DishDAOImpl implements DishDAO {
     }
 
     private List<Ingredient> getIngredientsForDish(int dishId) {
-        String query = "SELECT i.ingrdient_id, i.name, i.unit_price, i.unit, i.update_datetime, di.quantity " +
+        String query = "SELECT i.ingredient_id, i.name, i.unit_price, i.unit, i.update_datetime, di.quantity " +
                 "FROM Ingredient i " +
-                "JOIN Dish_Ingredient di ON i.id = di.ingredient_id " +
+                "JOIN Dish_Ingredient di ON i.ingredient_id = di.ingredient_id " +
                 "WHERE di.dish_id = ?";
 
         List<Ingredient> ingredients = new ArrayList<>();
@@ -194,7 +194,7 @@ public class DishDAOImpl implements DishDAO {
 
             while (resultSet.next()) {
                 Ingredient ingredient = new Ingredient(
-                        resultSet.getInt("dish_id"),
+                        resultSet.getInt("ingredient_id"),
                         resultSet.getString("name"),
                         resultSet.getDouble("unit_price"),
                         Unit.valueOf(resultSet.getString("unit")),

@@ -15,7 +15,7 @@ import java.util.List;
 import com.restaurant.entities.Unit;
 import static org.junit.jupiter.api.Assertions.*;
 
-class DishTest {
+public class DishTest {
     private DishDAO dishDAO;
     private IngredientDAO ingredientDAO;
 

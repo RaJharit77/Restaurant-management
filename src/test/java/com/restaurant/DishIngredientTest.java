@@ -13,13 +13,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-class DishIngredientTest {
+public class DishIngredientTest {
     private DishDAO dishDAO;
     private IngredientDAO ingredientDAO;
+    private DataSource dataSource;
 
     @BeforeEach
     void setUp() {
-        DataSource dataSource = new DataSource();
+        dataSource = new DataSource();
         dishDAO = new DishDAOImpl(dataSource);
         ingredientDAO = new IngredientDAOImpl(dataSource);
     }
@@ -68,7 +69,7 @@ class DishIngredientTest {
         List<Dish> results = dishDAO.filterDish("Cheeseburger", 0, null);
         assertFalse(results.isEmpty(), "Results should not be empty");
         assertEquals(1, results.size(), "Only one Cheeseburger should be found");
-        assertEquals("Cheeseburger", results.get(0).getName());
+        assertEquals("Cheeseburger", results.getFirst().getName());
     }
 
     @Test

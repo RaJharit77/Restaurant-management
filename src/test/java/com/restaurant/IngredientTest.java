@@ -15,7 +15,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class IngredientTest {
+public class IngredientTest {
     private static IngredientDAO ingredientDAO;
 
     @BeforeAll
