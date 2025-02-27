@@ -1,18 +1,16 @@
 package com.restaurant;
 
+import com.restaurant.db.DataSource;
 import com.restaurant.dao.StockMovementImpl;
 import com.restaurant.entities.StockMovement;
 import com.restaurant.entities.MovementType;
 import com.restaurant.entities.Unit;
-import com.restaurant.db.DataSource;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
