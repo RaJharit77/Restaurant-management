@@ -1,9 +1,6 @@
 package com.restaurant.dao;
 
-import com.restaurant.entities.Ingredient;
-import com.restaurant.entities.PriceHistory;
-import com.restaurant.entities.StockMovement;
-import com.restaurant.entities.Unit;
+import com.restaurant.entities.*;
 import com.restaurant.db.DataSource;
 
 import java.sql.*;
@@ -208,6 +205,7 @@ public class IngredientDAOImpl implements IngredientDAO {
         return ingredients;
     }
 
+    @Override
     public void addStockMovement(StockMovement movement) {
         String query = "INSERT INTO Stock_Movement (ingredient_id, movement_type, quantity, unit, movement_date) VALUES (?, ?::movement_type, ?, ?::unit_type, ?)";
         try (Connection connection = dataSource.getConnection();

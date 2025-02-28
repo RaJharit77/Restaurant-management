@@ -7,6 +7,7 @@ import com.restaurant.entities.Ingredient;
 import com.restaurant.entities.StockMovement;
 import com.restaurant.entities.MovementType;
 import com.restaurant.entities.Unit;
+import com.restaurant.dao.StockMovementImpl;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
