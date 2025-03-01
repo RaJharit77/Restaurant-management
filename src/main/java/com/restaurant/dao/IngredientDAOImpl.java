@@ -226,8 +226,7 @@ public class IngredientDAOImpl implements IngredientDAO {
     public Ingredient findByIdAndPriceAndDateAndStockDate(int ingredientId, LocalDateTime priceDate, LocalDateTime stockDate) {
         String ingredientQuery = "SELECT * FROM Ingredient WHERE ingredient_id = ?";
         String priceQuery = "SELECT price FROM Price_History WHERE ingredient_id = ? AND date <= ? ORDER BY date DESC LIMIT 1";
-        String stockQuery = "SELECT SUM(CASE WHEN movement_type = 'ENTRY' THEN quantity ELSE -quantity END) AS available_quantity " +
-                "FROM Stock_Movement WHERE ingredient_id = ? AND movement_date <= ?";
+        String stockQuery = "SELECT * FROM Stock_Movement WHERE ingredient_id = ? AND movement_date <= ?";
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement ingredientStatement = connection.prepareStatement(ingredientQuery);
@@ -260,10 +259,19 @@ public class IngredientDAOImpl implements IngredientDAO {
                 stockStatement.setTimestamp(2, Timestamp.valueOf(stockDate));
                 ResultSet stockResultSet = stockStatement.executeQuery();
 
-                if (stockResultSet.next()) {
-                    double availableQuantity = stockResultSet.getDouble("available_quantity");
-                    ingredient.setRequiredQuantity(availableQuantity);
+                double availableQuantity = 0;
+                while (stockResultSet.next()) {
+                    MovementType movementType = MovementType.valueOf(stockResultSet.getString("movement_type"));
+                    double quantity = stockResultSet.getDouble("quantity");
+
+                    if (movementType == MovementType.ENTRY) {
+                        availableQuantity += quantity;
+                    } else if (movementType == MovementType.EXIT) {
+                        availableQuantity -= quantity;
+                    }
                 }
+
+                ingredient.setRequiredQuantity(availableQuantity);
 
                 return ingredient;
             }
