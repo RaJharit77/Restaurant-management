@@ -51,16 +51,16 @@ public class Ingredient {
     }
 
     public double getAvailableQuantity(LocalDateTime date) {
-        double availableQuantity = 0;
-        for (StockMovement movement : stockMovements) {
-            if (movement.getMovementDate().isBefore(date)){
-                if (movement.getMovementType() == MovementType.ENTRY) {
-                    availableQuantity += movement.getQuantity();
-                } else if (movement.getMovementType() == MovementType.EXIT) {
-                    availableQuantity -= movement.getQuantity();
-                }
-            }
-        }
-        return availableQuantity;
+        return stockMovements.stream()
+                .filter(movement -> movement.getMovementDate().isBefore(date))
+                .mapToDouble(movement -> {
+                    if (movement.getMovementType() == MovementType.ENTRY) {
+                        return movement.getQuantity();
+                    } else if (movement.getMovementType() == MovementType.EXIT) {
+                        return -movement.getQuantity();
+                    }
+                    return 0;
+                })
+                .sum();
     }
 }
