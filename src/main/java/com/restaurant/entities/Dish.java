@@ -41,4 +41,29 @@ public class Dish {
     public double getGrossMarginAtDate(LocalDateTime date) {
         return unitPrice - getIngredientCostAtDate(date);
     }
+
+    public double getAvailableQuantity(LocalDateTime date) {
+        if (ingredients == null || ingredients.isEmpty()) {
+            return 0;
+        }
+
+        double availableQuantity = Double.MAX_VALUE;
+
+        for (Ingredient ingredient : ingredients) {
+            double ingredientAvailableQuantity = ingredient.getAvailableQuantity(date);
+            double requiredQuantity = ingredient.getRequiredQuantity();
+
+            if (requiredQuantity <= 0) {
+                continue;
+            }
+
+            double dishQuantityForIngredient = ingredientAvailableQuantity / requiredQuantity;
+
+            if (dishQuantityForIngredient < availableQuantity) {
+                availableQuantity = dishQuantityForIngredient;
+            }
+        }
+
+        return availableQuantity == Double.MAX_VALUE ? 0 : availableQuantity;
+    }
 }

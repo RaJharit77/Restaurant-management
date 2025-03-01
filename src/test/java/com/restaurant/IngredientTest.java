@@ -1,5 +1,6 @@
 package com.restaurant;
 
+import com.restaurant.dao.StockMovementDAO;
 import com.restaurant.db.DataSource;
 import com.restaurant.dao.IngredientDAO;
 import com.restaurant.dao.IngredientDAOImpl;
@@ -7,6 +8,7 @@ import com.restaurant.entities.Ingredient;
 import com.restaurant.entities.StockMovement;
 import com.restaurant.entities.MovementType;
 import com.restaurant.entities.Unit;
+import com.restaurant.dao.StockMovementImpl;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -17,11 +19,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class IngredientTest {
     private static IngredientDAO ingredientDAO;
+    private static StockMovementImpl stockMovementImpl;
 
     @BeforeAll
     static void setUp() {
         DataSource dataSource = new DataSource();
         ingredientDAO = new IngredientDAOImpl(dataSource);
+        stockMovementImpl = new StockMovementImpl(dataSource);
     }
 
     @Test
@@ -86,5 +90,27 @@ public class IngredientTest {
 
         LocalDateTime currentDate = LocalDateTime.of(2025, 2, 24, 12, 0);
         assertEquals(80, oeuf.getAvailableQuantity(currentDate));
+
+
+        Ingredient sel = new Ingredient(0, "Sel", 2.5, Unit.G, LocalDateTime.now(), 0);
+        ingredientDAO.saveAll(List.of(sel));
+
+        sel.addPriceHistory(3.0, LocalDateTime.of(2025, 2, 1, 8, 0));
+        ingredientDAO.saveAll(List.of(sel));
+
+        StockMovement selEntry1 = new StockMovement(0, sel.getId(), MovementType.ENTRY, 500, Unit.G, LocalDateTime.of(2025, 2, 1, 8, 0));
+        StockMovement selExit1 = new StockMovement(0, sel.getId(), MovementType.EXIT, 100, Unit.G, LocalDateTime.of(2025, 2, 2, 10, 0));
+
+        stockMovementImpl.saveStockMovement(selEntry1);
+        stockMovementImpl.saveStockMovement(selExit1);
+
+        LocalDateTime priceDate = LocalDateTime.of(2025, 2, 1, 12, 0);
+        LocalDateTime stockDate = LocalDateTime.of(2025, 2, 3, 12, 0);
+        Ingredient retrievedIngredient = ingredientDAO.findByIdAndPriceAndDateAndStockDate(sel.getId(), priceDate, stockDate);
+
+        assertNotNull(retrievedIngredient);
+        assertEquals("Sel", retrievedIngredient.getName());
+        assertEquals(3.0, retrievedIngredient.getUnitPrice());
+        assertEquals(400, retrievedIngredient.getRequiredQuantity());
     }
 }

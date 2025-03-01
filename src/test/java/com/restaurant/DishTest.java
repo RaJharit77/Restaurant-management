@@ -1,13 +1,14 @@
 package com.restaurant;
 
+import com.restaurant.dao.*;
 import com.restaurant.db.DataSource;
-import com.restaurant.dao.DishDAO;
-import com.restaurant.dao.DishDAOImpl;
-import com.restaurant.dao.IngredientDAO;
-import com.restaurant.dao.IngredientDAOImpl;
 import com.restaurant.entities.Dish;
 import com.restaurant.entities.Ingredient;
 import com.restaurant.entities.Unit;
+import com.restaurant.dao.StockMovementDAO;
+import com.restaurant.dao.StockMovementImpl;
+import com.restaurant.entities.StockMovement;
+import com.restaurant.entities.MovementType;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,12 +20,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DishTest {
     private DishDAO dishDAO;
     private IngredientDAO ingredientDAO;
+    private StockMovementDAO stockMovementDAO;
 
     @BeforeEach
     void setUp() {
         DataSource dataSource = new DataSource();
         dishDAO = new DishDAOImpl(dataSource);
         ingredientDAO = new IngredientDAOImpl(dataSource);
+        stockMovementDAO = new StockMovementImpl(dataSource);
     }
 
     @Test
@@ -113,5 +116,38 @@ public class DishTest {
         double expectedCostAtPastDate = (100 * 18.0) + (0.15 * 9500);
         double expectedMarginAtPastDate = 15000 - expectedCostAtPastDate;
         assertEquals(expectedMarginAtPastDate, hotDog.getGrossMarginAtDate(pastDate));
+    }
+
+    @Test
+    void testGetAvailableQuantity() {
+        Ingredient sausage = new Ingredient(1, "Saucisse", 20, Unit.G, LocalDateTime.now(), 100);
+        sausage.getStockMovements().add(new StockMovement(1, 1, MovementType.ENTRY, 500, Unit.G, LocalDateTime.of(2025, 2, 1, 8, 0)));
+        sausage.getStockMovements().add(new StockMovement(2, 1, MovementType.EXIT, 200, Unit.G, LocalDateTime.of(2025, 2, 2, 10, 0)));
+
+        Ingredient oil = new Ingredient(2, "Huile", 10000, Unit.L, LocalDateTime.now(), 0.15);
+        oil.getStockMovements().add(new StockMovement(3, 2, MovementType.ENTRY, 20, Unit.L, LocalDateTime.of(2025, 2, 1, 8, 0)));
+        oil.getStockMovements().add(new StockMovement(4, 2, MovementType.EXIT, 5, Unit.L, LocalDateTime.of(2025, 2, 2, 10, 0)));
+
+        ingredientDAO.saveAll(List.of(sausage, oil));
+
+        Dish hotDog = new Dish();
+        hotDog.setName("Hot Dog");
+        hotDog.setUnitPrice(15000);
+        hotDog.setIngredients(List.of(sausage, oil));
+        dishDAO.saveAll(List.of(hotDog));
+
+        LocalDateTime date = LocalDateTime.of(2025, 2, 3, 12, 0);
+
+        double sausageAvailable = sausage.getAvailableQuantity(date);
+        double sausageRequired = sausage.getRequiredQuantity();
+        double sausageDishQuantity = sausageAvailable / sausageRequired;
+
+        double oilAvailable = oil.getAvailableQuantity(date);
+        double oilRequired = oil.getRequiredQuantity();
+        double oilDishQuantity = oilAvailable / oilRequired;
+
+        double expectedAvailableQuantity = Math.min(sausageDishQuantity, oilDishQuantity);
+
+        assertEquals(expectedAvailableQuantity, hotDog.getAvailableQuantity(date));
     }
 }

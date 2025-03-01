@@ -4,6 +4,7 @@ import com.restaurant.entities.*;
 import com.restaurant.db.DataSource;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class IngredientDAOImpl implements IngredientDAO {
@@ -219,5 +220,57 @@ public class IngredientDAOImpl implements IngredientDAO {
         } catch (SQLException e) {
             throw new RuntimeException("Error adding stock movement", e);
         }
+    }
+
+    @Override
+    public Ingredient findByIdAndPriceAndDateAndStockDate(int ingredientId, LocalDateTime priceDate, LocalDateTime stockDate) {
+        String ingredientQuery = "SELECT * FROM Ingredient WHERE ingredient_id = ?";
+        String priceQuery = "SELECT price FROM Price_History WHERE ingredient_id = ? AND date <= ? ORDER BY date DESC LIMIT 1";
+        String stockQuery = "SELECT SUM(CASE WHEN movement_type = 'ENTRY' THEN quantity ELSE -quantity END) AS available_quantity " +
+                "FROM Stock_Movement WHERE ingredient_id = ? AND movement_date <= ?";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ingredientStatement = connection.prepareStatement(ingredientQuery);
+             PreparedStatement priceStatement = connection.prepareStatement(priceQuery);
+             PreparedStatement stockStatement = connection.prepareStatement(stockQuery)) {
+
+            ingredientStatement.setInt(1, ingredientId);
+            ResultSet ingredientResultSet = ingredientStatement.executeQuery();
+
+            if (ingredientResultSet.next()) {
+                Ingredient ingredient = new Ingredient(
+                        ingredientResultSet.getInt("ingredient_id"),
+                        ingredientResultSet.getString("name"),
+                        ingredientResultSet.getDouble("unit_price"),
+                        Unit.valueOf(ingredientResultSet.getString("unit")),
+                        ingredientResultSet.getTimestamp("update_datetime").toLocalDateTime(),
+                        0
+                );
+
+                priceStatement.setInt(1, ingredientId);
+                priceStatement.setTimestamp(2, Timestamp.valueOf(priceDate));
+                ResultSet priceResultSet = priceStatement.executeQuery();
+
+                if (priceResultSet.next()) {
+                    double priceAtDate = priceResultSet.getDouble("price");
+                    ingredient.setUnitPrice(priceAtDate);
+                }
+
+                stockStatement.setInt(1, ingredientId);
+                stockStatement.setTimestamp(2, Timestamp.valueOf(stockDate));
+                ResultSet stockResultSet = stockStatement.executeQuery();
+
+                if (stockResultSet.next()) {
+                    double availableQuantity = stockResultSet.getDouble("available_quantity");
+                    ingredient.setRequiredQuantity(availableQuantity);
+                }
+
+                return ingredient;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving ingredient with price and stock details", e);
+        }
+
+        return null;
     }
 }
