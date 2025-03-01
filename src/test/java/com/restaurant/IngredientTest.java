@@ -1,6 +1,5 @@
 package com.restaurant;
 
-import com.restaurant.dao.StockMovementDAO;
 import com.restaurant.db.DataSource;
 import com.restaurant.dao.IngredientDAO;
 import com.restaurant.dao.IngredientDAOImpl;
