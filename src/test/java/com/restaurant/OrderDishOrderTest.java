@@ -10,7 +10,7 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class OrderTest {
+public class OrderDishOrderTest {
     private OrderDAO orderDAO;
     private DishOrderDAO dishOrderDAO;
     private DataSource dataSource;
