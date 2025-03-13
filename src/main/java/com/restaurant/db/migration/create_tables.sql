@@ -1,5 +1,7 @@
 CREATE TYPE unit_type AS ENUM ('G', 'L', 'U');
 CREATE TYPE movement_type AS ENUM ('ENTRY', 'EXIT');
+CREATE TYPE order_status AS ENUM ('CREATED', 'CONFIRMED', 'IN_PREPARATION', 'COMPLETED', 'SERVED');
+CREATE TYPE dish_status AS ENUM ('CREATED', 'CONFIRMED', 'IN_PREPARATION', 'COMPLETED', 'SERVED');
 
 CREATE TABLE Ingredient (
     ingredient_id SERIAL PRIMARY KEY,
@@ -37,4 +39,33 @@ CREATE TABLE Stock_Movement (
     quantity DECIMAL(10, 2) NOT NULL,
     unit unit_type NOT NULL,
     movement_date TIMESTAMP NOT NULL
+);
+
+CREATE TABLE "Order" (
+    order_id SERIAL PRIMARY KEY,
+    reference VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status order_status DEFAULT 'CREATED'
+);
+
+CREATE TABLE Dish_Order (
+    dish_order_id SERIAL PRIMARY KEY,
+    order_id INT REFERENCES "Order"(order_id) ON DELETE CASCADE,
+    dish_id INT REFERENCES Dish(dish_id) ON DELETE CASCADE,
+    quantity INT NOT NULL,
+    status dish_status DEFAULT 'CREATED'
+);
+
+CREATE TABLE Status_History (
+    status_history_id SERIAL PRIMARY KEY,
+    dish_order_id INT REFERENCES Dish_Order(dish_order_id) ON DELETE CASCADE,
+    status dish_status NOT NULL,
+    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Order_Status_History (
+    order_status_history_id SERIAL PRIMARY KEY,
+    order_id INT REFERENCES "Order"(order_id) ON DELETE CASCADE,
+    status order_status NOT NULL,
+    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

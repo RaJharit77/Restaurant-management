@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDateTime;
+import java.sql.*;
 import java.util.List;
 
 public class DishIngredientTest {
@@ -60,6 +61,14 @@ public class DishIngredientTest {
 
     @Test
     void testFilterDishByName() {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("DELETE FROM Dish_Ingredient");
+            statement.execute("DELETE FROM Dish");
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors du nettoyage de la base de données", e);
+        }
+
         Dish burger = new Dish();
         burger.setName("Cheeseburger");
         burger.setUnitPrice(12000);
