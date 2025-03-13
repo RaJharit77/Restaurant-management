@@ -87,7 +87,7 @@ public class OrderTest {
         Order savedOrder = orderDAO.save(order);
 
         Dish dish = new Dish();
-        dish.setId(1);
+        dish.setId(45);
         dish.setName("Hot Dog");
         dish.setUnitPrice(15000);
 
