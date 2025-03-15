@@ -7,12 +7,12 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @EqualsAndHashCode
-public class StatusHistory {
+public class DishOrderStatus {
     private int statusHistoryId;
     private DishStatus status;
     private LocalDateTime changedAt;
 
-    public StatusHistory(int statusHistoryId, DishStatus status, LocalDateTime changedAt) {
+    public DishOrderStatus(int statusHistoryId, DishStatus status, LocalDateTime changedAt) {
         this.statusHistoryId = statusHistoryId;
         this.status = status;
         this.changedAt = changedAt;

@@ -26,7 +26,7 @@ public class OrderDAOImpl implements OrderDAO {
                 order.setOrderId(resultSet.getInt("order_id"));
                 order.setReference(resultSet.getString("reference"));
                 order.setCreatedAt(resultSet.getTimestamp("created_at").toLocalDateTime());
-                order.setStatus(OrderStatus.valueOf(resultSet.getString("status")));
+                order.setStatus(StatusType.valueOf(resultSet.getString("status")));
                 orders.add(order);
             }
         } catch (SQLException e) {
@@ -47,7 +47,7 @@ public class OrderDAOImpl implements OrderDAO {
                 order.setOrderId(resultSet.getInt("order_id"));
                 order.setReference(resultSet.getString("reference"));
                 order.setCreatedAt(resultSet.getTimestamp("created_at").toLocalDateTime());
-                order.setStatus(OrderStatus.valueOf(resultSet.getString("status")));
+                order.setStatus(StatusType.valueOf(resultSet.getString("status")));
                 return order;
             }
         } catch (SQLException e) {
@@ -68,7 +68,7 @@ public class OrderDAOImpl implements OrderDAO {
                 order.setOrderId(resultSet.getInt("order_id"));
                 order.setReference(resultSet.getString("reference"));
                 order.setCreatedAt(resultSet.getTimestamp("created_at").toLocalDateTime());
-                order.setStatus(OrderStatus.valueOf(resultSet.getString("status")));
+                order.setStatus(StatusType.valueOf(resultSet.getString("status")));
                 return order;
             }
         } catch (SQLException e) {
@@ -101,7 +101,7 @@ public class OrderDAOImpl implements OrderDAO {
     }
 
     @Override
-    public void updateStatus(int orderId, OrderStatus status) {
+    public void updateStatus(int orderId, StatusType status) {
         String query = "UPDATE \"Order\" SET status = ?::order_status WHERE order_id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {

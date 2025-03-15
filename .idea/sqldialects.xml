@@ -4,15 +4,26 @@
     <file url="file://$PROJECT_DIR$/restaurant.sql" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/script.sql" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/dao/DishDAOImpl.java" dialect="GenericSQL" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/migration/create_tables.sql" dialect="GenericSQL" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/insert_testdata_dish.sql" dialect="GenericSQL" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/insert_testdata_dish_ingredient.sql" dialect="GenericSQL" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/insert_testdata_dish_order.sql" dialect="GenericSQL" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/insert_testdata_ingredient.sql" dialect="GenericSQL" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/insert_testdata_order.sql" dialect="GenericSQL" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/insert_testdata_order_status_history.sql" dialect="GenericSQL" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/insert_testdata_price_history.sql" dialect="GenericSQL" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/insert_testdata_status_history.sql" dialect="GenericSQL" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/insert_testdata_stock_movement.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/migration/1_create_table_dish.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/migration/2_create_table_ingredient.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/migration/3_create_table_dish_ingredient.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/migration/4_create_table_price_history.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/migration/5_create_table_stock_movement.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/migration/6_create_table_order.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/migration/7_create_table_dish_order.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/migration/8_create_table_order_status.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/migration/9_create_table_dish_order_status.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/migration/create_enum_movement_type.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/migration/create_enum_status.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/migration/create_enum_unit_type.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/1_insert_testdata_dish.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/2_insert_testdata_ingredient.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/3_insert_testdata_dish_ingredient.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/4_insert_testdata_price_history.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/5_insert_testdata_stock_movement.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/6_insert_testdata_order.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/7_insert_testdata_dish_order.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/8_insert_testdata_order_status_history.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/9_insert_testdata_dish_order_status.sql" dialect="PostgreSQL" />
   </component>
 </project>

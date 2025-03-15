@@ -35,12 +35,12 @@ public class OrderDishOrderTest {
         Order order = new Order();
         order.setReference("ORDER-001");
         order.setCreatedAt(LocalDateTime.now());
-        order.setStatus(OrderStatus.CREATED);
+        order.setStatus(StatusType.CREATED);
 
         Order savedOrder = orderDAO.save(order);
         assertNotNull(savedOrder.getOrderId());
         assertEquals("ORDER-001", savedOrder.getReference());
-        assertEquals(OrderStatus.CREATED, savedOrder.getStatus());
+        assertEquals(StatusType.CREATED, savedOrder.getStatus());
     }
 
     @Test
@@ -48,7 +48,7 @@ public class OrderDishOrderTest {
         Order order = new Order();
         order.setReference("ORDER-004");
         order.setCreatedAt(LocalDateTime.now());
-        order.setStatus(OrderStatus.CREATED);
+        order.setStatus(StatusType.CREATED);
 
         Order existingOrder = orderDAO.findByReference(order.getReference());
         if (existingOrder != null) {
@@ -60,7 +60,7 @@ public class OrderDishOrderTest {
 
         assertNotNull(retrievedOrder);
         assertEquals("ORDER-004", retrievedOrder.getReference());
-        assertEquals(OrderStatus.CREATED, retrievedOrder.getStatus());
+        assertEquals(StatusType.CREATED, retrievedOrder.getStatus());
     }
 
     @Test
@@ -68,13 +68,13 @@ public class OrderDishOrderTest {
         Order order = new Order();
         order.setReference("ORDER-002");
         order.setCreatedAt(LocalDateTime.now());
-        order.setStatus(OrderStatus.CREATED);
+        order.setStatus(StatusType.CREATED);
 
         Order savedOrder = orderDAO.save(order);
-        orderDAO.updateStatus(savedOrder.getOrderId(), OrderStatus.CONFIRMED);
+        orderDAO.updateStatus(savedOrder.getOrderId(), StatusType.CONFIRMED);
 
         Order updatedOrder = orderDAO.findById(savedOrder.getOrderId());
-        assertEquals(OrderStatus.CONFIRMED, updatedOrder.getStatus());
+        assertEquals(StatusType.CONFIRMED, updatedOrder.getStatus());
     }
 
     @Test
@@ -82,7 +82,7 @@ public class OrderDishOrderTest {
         Order order = new Order();
         order.setReference("ORDER-003");
         order.setCreatedAt(LocalDateTime.now());
-        order.setStatus(OrderStatus.CREATED);
+        order.setStatus(StatusType.CREATED);
 
         Order savedOrder = orderDAO.save(order);
 

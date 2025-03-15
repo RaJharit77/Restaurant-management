@@ -53,7 +53,7 @@ public class DishOrderDAOImpl implements DishOrderDAO {
         String query = "INSERT INTO Dish_Order (order_id, dish_id, quantity, status) VALUES (?, ?, ?, ?::dish_status) RETURNING dish_order_id";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, dishOrder.getOrder().getOrderId()); // Use getOrder() here
+            statement.setInt(1, dishOrder.getOrder().getOrderId());
             statement.setInt(2, dishOrder.getDish().getId());
             statement.setInt(3, dishOrder.getQuantity());
             statement.setString(4, dishOrder.getStatus().name());

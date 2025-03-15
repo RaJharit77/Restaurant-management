@@ -1,7 +1,7 @@
 package com.restaurant.entities;
 
 import lombok.*;
-import java.time.LocalDateTime;
+
 import java.util.List;
 
 @Getter
@@ -14,13 +14,13 @@ public class DishOrder {
     private Order order;
     private int quantity;
     private DishStatus status;
-    private List<StatusHistory> statusHistory;
+    private List<DishOrderStatus> statusHistory;
 
     public DishOrder() {
         this.status = DishStatus.CREATED;
     }
 
-    public DishOrder(int dishOrderId, Dish dish, Order order, int quantity, DishStatus status, List<StatusHistory> statusHistory) {
+    public DishOrder(int dishOrderId, Dish dish, Order order, int quantity, DishStatus status, List<DishOrderStatus> statusHistory) {
         this.dishOrderId = dishOrderId;
         this.dish = dish;
         this.order = order;
