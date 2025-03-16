@@ -8,10 +8,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class OrderDishOrderTest {
     private OrderDAO orderDAO;
+    private OrderStatusDAO orderStatusDAO;
     private DishOrderDAO dishOrderDAO;
     private DataSource dataSource;
 
@@ -20,11 +23,13 @@ public class OrderDishOrderTest {
         dataSource = new DataSource();
         orderDAO = new OrderDAOImpl(dataSource);
         dishOrderDAO = new DishOrderDAOImpl(dataSource);
+        orderStatusDAO = new OrderStatusDAOImpl(dataSource);
 
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("DELETE FROM Dish_Order");
             statement.execute("DELETE FROM \"Order\"");
+            statement.execute("DELETE FROM Order_Status");
         } catch (SQLException e) {
             throw new RuntimeException("Erreur lors du nettoyage de la base de données", e);
         }
@@ -79,6 +84,11 @@ public class OrderDishOrderTest {
 
     @Test
     void testAddDishToOrder() {
+        Dish dish = new Dish();
+        dish.setId(1);
+        dish.setName("Hot Dog");
+        dish.setUnitPrice(15000);
+
         Order order = new Order();
         order.setReference("ORDER-003");
         order.setCreatedAt(LocalDateTime.now());
@@ -86,20 +96,54 @@ public class OrderDishOrderTest {
 
         Order savedOrder = orderDAO.save(order);
 
-        Dish dish = new Dish();
-        dish.setId(45);
-        dish.setName("Hot Dog");
-        dish.setUnitPrice(15000);
-
         DishOrder dishOrder = new DishOrder();
         dishOrder.setDish(dish);
         dishOrder.setOrder(savedOrder);
         dishOrder.setQuantity(2);
-        dishOrder.setStatus(DishStatus.CREATED);
+        dishOrder.setStatus(StatusType.CREATED);
 
         DishOrder savedDishOrder = dishOrderDAO.save(dishOrder);
         assertNotNull(savedDishOrder.getDishOrderId());
         assertEquals(2, savedDishOrder.getQuantity());
-        assertEquals(DishStatus.CREATED, savedDishOrder.getStatus());
+        assertEquals(StatusType.CREATED, savedDishOrder.getStatus());
+    }
+
+    @Test
+    void testSaveOrderStatus() {
+        Order order = new Order();
+        order.setReference("ORDER-001");
+        order.setCreatedAt(LocalDateTime.now());
+        order.setStatus(StatusType.CREATED);
+
+        Order savedOrder = orderDAO.save(order);
+        assertNotNull(savedOrder.getOrderId());
+
+        OrderStatus orderStatus = new OrderStatus(0, StatusType.CONFIRMED, LocalDateTime.now());
+
+        OrderStatus savedOrderStatus = orderStatusDAO.save(orderStatus, savedOrder.getOrderId());
+        assertNotNull(savedOrderStatus.getOrderStatusId());
+        assertEquals(StatusType.CONFIRMED, savedOrderStatus.getStatus());
+    }
+
+    @Test
+    void testFindOrderStatusByOrderId() {
+        Order order = new Order();
+        order.setReference("ORDER-002");
+        order.setCreatedAt(LocalDateTime.now());
+        order.setStatus(StatusType.CREATED);
+
+        Order savedOrder = orderDAO.save(order);
+        assertNotNull(savedOrder.getOrderId());
+
+        OrderStatus orderStatus1 = new OrderStatus(0, StatusType.CREATED, LocalDateTime.now());
+        OrderStatus orderStatus2 = new OrderStatus(0, StatusType.CONFIRMED, LocalDateTime.now().plusMinutes(5));
+        orderStatusDAO.save(orderStatus1, savedOrder.getOrderId());
+        orderStatusDAO.save(orderStatus2, savedOrder.getOrderId());
+
+        List<OrderStatus> orderStatuses = orderStatusDAO.findByOrderId(savedOrder.getOrderId());
+        assertNotNull(orderStatuses);
+        assertEquals(2, orderStatuses.size());
+        assertEquals(StatusType.CREATED, orderStatuses.get(0).getStatus());
+        assertEquals(StatusType.CONFIRMED, orderStatuses.get(1).getStatus());
     }
 }

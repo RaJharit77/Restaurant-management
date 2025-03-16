@@ -50,7 +50,7 @@ public class DishOrderDAOImpl implements DishOrderDAO {
 
     @Override
     public DishOrder save(DishOrder dishOrder) {
-        String query = "INSERT INTO Dish_Order (order_id, dish_id, quantity, status) VALUES (?, ?, ?, ?::dish_status) RETURNING dish_order_id";
+        String query = "INSERT INTO Dish_Order (order_id, dish_id, quantity, status) VALUES (?, ?, ?, ?::status_type) RETURNING dish_order_id";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, dishOrder.getOrder().getOrderId());
@@ -68,7 +68,7 @@ public class DishOrderDAOImpl implements DishOrderDAO {
     }
 
     @Override
-    public void updateStatus(int dishOrderId, DishStatus status) {
+    public void updateStatus(int dishOrderId, StatusType status) {
         String query = "UPDATE Dish_Order SET status = ?::dish_status WHERE dish_order_id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -85,7 +85,7 @@ public class DishOrderDAOImpl implements DishOrderDAO {
         dishOrder.setDishOrderId(resultSet.getInt("dish_order_id"));
         dishOrder.setDish(new Dish(resultSet.getInt("dish_id"), null, 0, null));
         dishOrder.setQuantity(resultSet.getInt("quantity"));
-        dishOrder.setStatus(DishStatus.valueOf(resultSet.getString("status")));
+        dishOrder.setStatus(StatusType.valueOf(resultSet.getString("status")));
         return dishOrder;
     }
 }

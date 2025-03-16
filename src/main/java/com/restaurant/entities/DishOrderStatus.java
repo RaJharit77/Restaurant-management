@@ -9,10 +9,10 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode
 public class DishOrderStatus {
     private int dishOrderStatusId;
-    private DishStatus status;
+    private StatusType status;
     private LocalDateTime changedAt;
 
-    public DishOrderStatus(int dishOrderStatusId, DishStatus status, LocalDateTime changedAt) {
+    public DishOrderStatus(int dishOrderStatusId, StatusType status, LocalDateTime changedAt) {
         this.dishOrderStatusId = dishOrderStatusId;
         this.status = status;
         this.changedAt = changedAt;

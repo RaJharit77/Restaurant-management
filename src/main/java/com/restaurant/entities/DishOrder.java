@@ -13,14 +13,14 @@ public class DishOrder {
     private Dish dish;
     private Order order;
     private int quantity;
-    private DishStatus status;
+    private StatusType status;
     private List<DishOrderStatus> statusHistory;
 
     public DishOrder() {
-        this.status = DishStatus.CREATED;
+        this.status = StatusType.CREATED;
     }
 
-    public DishOrder(int dishOrderId, Dish dish, Order order, int quantity, DishStatus status, List<DishOrderStatus> statusHistory) {
+    public DishOrder(int dishOrderId, Dish dish, Order order, int quantity, StatusType status, List<DishOrderStatus> statusHistory) {
         this.dishOrderId = dishOrderId;
         this.dish = dish;
         this.order = order;
@@ -29,7 +29,7 @@ public class DishOrder {
         this.statusHistory = statusHistory;
     }
 
-    public DishStatus getActualStatus() {
+    public StatusType getActualStatus() {
         return status;
     }
 }

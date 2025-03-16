@@ -84,7 +84,7 @@ public class OrderDAOImpl implements OrderDAO {
             throw new RuntimeException("La référence de commande existe déjà : " + order.getReference());
         }
 
-        String query = "INSERT INTO \"Order\" (reference, created_at, status) VALUES (?, ?, ?::order_status) RETURNING order_id";
+        String query = "INSERT INTO \"Order\" (reference, created_at, status) VALUES (?, ?, ?::status_type) RETURNING order_id";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, order.getReference());
@@ -102,7 +102,7 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     public void updateStatus(int orderId, StatusType status) {
-        String query = "UPDATE \"Order\" SET status = ?::order_status WHERE order_id = ?";
+        String query = "UPDATE \"Order\" SET status = ?::status_type WHERE order_id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, status.name());
