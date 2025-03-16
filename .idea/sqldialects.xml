@@ -23,7 +23,7 @@
     <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/5_insert_testdata_stock_movement.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/6_insert_testdata_order.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/7_insert_testdata_dish_order.sql" dialect="PostgreSQL" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/8_insert_testdata_order_status_history.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/8_insert_testdata_order_status.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/restaurant/db/testdata/9_insert_testdata_dish_order_status.sql" dialect="PostgreSQL" />
   </component>
 </project>

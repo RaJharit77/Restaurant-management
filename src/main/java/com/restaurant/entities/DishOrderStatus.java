@@ -8,12 +8,12 @@ import java.time.LocalDateTime;
 @ToString
 @EqualsAndHashCode
 public class DishOrderStatus {
-    private int statusHistoryId;
+    private int dishOrderStatusId;
     private DishStatus status;
     private LocalDateTime changedAt;
 
-    public DishOrderStatus(int statusHistoryId, DishStatus status, LocalDateTime changedAt) {
-        this.statusHistoryId = statusHistoryId;
+    public DishOrderStatus(int dishOrderStatusId, DishStatus status, LocalDateTime changedAt) {
+        this.dishOrderStatusId = dishOrderStatusId;
         this.status = status;
         this.changedAt = changedAt;
     }
