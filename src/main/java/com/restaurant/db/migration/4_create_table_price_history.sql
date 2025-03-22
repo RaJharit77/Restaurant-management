@@ -1,4 +1,4 @@
-CREATE TABLE Price_History
+CREATE TABLE Price_History IF NOT EXIST
 (
     price_history_id SERIAL PRIMARY KEY,
     ingredient_id    INT REFERENCES Ingredient (ingredient_id),

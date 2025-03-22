@@ -1,4 +1,4 @@
-CREATE TABLE "Order"
+CREATE TABLE "Order" IF NOT EXITST
 (
     order_id   SERIAL PRIMARY KEY,
     reference  VARCHAR(255) UNIQUE NOT NULL,

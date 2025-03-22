@@ -1,4 +1,4 @@
-CREATE TABLE Stock_Movement
+CREATE TABLE Stock_Movement IF NOT EXIST
 (
     movement_id   SERIAL PRIMARY KEY,
     ingredient_id INT REFERENCES Ingredient (ingredient_id),

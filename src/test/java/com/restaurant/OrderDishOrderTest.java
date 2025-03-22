@@ -146,4 +146,39 @@ public class OrderDishOrderTest {
         assertEquals(StatusType.CREATED, orderStatuses.get(0).getStatus());
         assertEquals(StatusType.CONFIRMED, orderStatuses.get(1).getStatus());
     }
+
+    @Test
+    void testGetTotalAmount() {
+        Dish dish1 = new Dish();
+        dish1.setId(1);
+        dish1.setName("Pizza");
+        dish1.setUnitPrice(10000);
+
+        Dish dish2 = new Dish();
+        dish2.setId(2);
+        dish2.setName("Burger");
+        dish2.setUnitPrice(8000);
+
+        Order order = new Order();
+        order.setReference("ORDER-005");
+        order.setCreatedAt(LocalDateTime.now());
+        order.setStatus(StatusType.CREATED);
+
+        DishOrder dishOrder1 = new DishOrder();
+        dishOrder1.setDish(dish1);
+        dishOrder1.setOrder(order);
+        dishOrder1.setQuantity(2);
+
+        DishOrder dishOrder2 = new DishOrder();
+        dishOrder2.setDish(dish2);
+        dishOrder2.setOrder(order);
+        dishOrder2.setQuantity(3);
+
+        order.addDishOrder(dishOrder1);
+        order.addDishOrder(dishOrder2);
+
+        double expectedTotalAmount = (dish1.getUnitPrice() * dishOrder1.getQuantity()) + (dish2.getUnitPrice() * dishOrder2.getQuantity());
+
+        assertEquals(expectedTotalAmount, order.getTotalAmount(), 0.001);
+    }
 }
