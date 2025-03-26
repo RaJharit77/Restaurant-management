@@ -6,6 +6,5 @@ import java.util.List;
 
 public interface OrderStatusDAO {
     List<OrderStatus> findByOrderId(int orderId);
-
     OrderStatus save(OrderStatus orderStatus, int orderId);
 }

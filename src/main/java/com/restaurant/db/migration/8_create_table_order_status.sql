@@ -1,4 +1,4 @@
-CREATE TABLE Order_Status IF NOT EXIST
+CREATE TABLE Order_Status IF NOT EXISTS
 (
     order_status_id SERIAL PRIMARY KEY,
     order_id                INT REFERENCES "Order" (order_id) ON DELETE CASCADE,

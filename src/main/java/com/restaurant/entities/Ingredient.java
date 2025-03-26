@@ -57,7 +57,7 @@ public class Ingredient {
                     if (movement.getMovementType() == MovementType.ENTRY) {
                         return movement.getQuantity();
                     } else if (movement.getMovementType() == MovementType.EXIT) {
-                        return -movement.getQuantity();
+                        return - movement.getQuantity();
                     }
                     return 0;
                 })

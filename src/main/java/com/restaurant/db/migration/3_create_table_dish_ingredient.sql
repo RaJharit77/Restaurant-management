@@ -1,4 +1,4 @@
-CREATE TABLE Dish_Ingredient IF NOT EXIST
+CREATE TABLE Dish_Ingredient IF NOT EXISTS
 (
     dish_id       INT REFERENCES Dish (dish_id),
     ingredient_id INT REFERENCES Ingredient (ingredient_id),
