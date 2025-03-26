@@ -4,6 +4,7 @@ import com.restaurant.db.DataSource;
 import com.restaurant.dao.StockMovementImpl;
 import com.restaurant.dao.IngredientDAO;
 import com.restaurant.dao.IngredientDAOImpl;
+import com.restaurant.db.DatabaseCleaner;
 import com.restaurant.entities.StockMovement;
 import com.restaurant.entities.Ingredient;
 import com.restaurant.entities.MovementType;
@@ -21,22 +22,16 @@ public class StockMovementTest {
     private StockMovementImpl stockMovementImpl;
     private IngredientDAO ingredientDAO;
     private DataSource dataSource;
+    private DatabaseCleaner databaseCleaner;
 
     @BeforeEach
     void setUp() {
         dataSource = new DataSource();
         stockMovementImpl = new StockMovementImpl(dataSource);
         ingredientDAO = new IngredientDAOImpl(dataSource);
-        resetDatabase();
-    }
+        databaseCleaner = new DatabaseCleaner(dataSource);
 
-    private void resetDatabase() {
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.execute("DELETE FROM Stock_Movement");
-        } catch (SQLException e) {
-            throw new RuntimeException("Error resetting database", e);
-        }
+        databaseCleaner.cleanSpecificTables("Stock_Movement", "Ingredient");
     }
 
     @Test

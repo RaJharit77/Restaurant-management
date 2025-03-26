@@ -14,7 +14,6 @@ public class Order {
     private String reference;
     private LocalDateTime createdAt;
     private StatusType status;
-    @Getter
     private List<DishOrder> dishOrders = new ArrayList<>();
 
     public Order() {

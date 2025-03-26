@@ -2,11 +2,11 @@ package com.restaurant;
 
 import com.restaurant.dao.*;
 import com.restaurant.db.DataSource;
+import com.restaurant.db.DatabaseCleaner;
 import com.restaurant.entities.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,6 +17,7 @@ public class OrderDishOrderTest {
     private OrderStatusDAO orderStatusDAO;
     private DishOrderDAO dishOrderDAO;
     private DataSource dataSource;
+    private DatabaseCleaner databaseCleaner;
 
     @BeforeEach
     void setUp() {
@@ -24,15 +25,9 @@ public class OrderDishOrderTest {
         orderDAO = new OrderDAOImpl(dataSource);
         dishOrderDAO = new DishOrderDAOImpl(dataSource);
         orderStatusDAO = new OrderStatusDAOImpl(dataSource);
+        databaseCleaner = new DatabaseCleaner(dataSource);
 
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.execute("DELETE FROM Dish_Order");
-            statement.execute("DELETE FROM \"Order\"");
-            statement.execute("DELETE FROM Order_Status");
-        } catch (SQLException e) {
-            throw new RuntimeException("Erreur lors du nettoyage de la base de données", e);
-        }
+        databaseCleaner.cleanSpecificTables("Dish_Order", "\"Order\"", "Order_Status");
     }
 
     @Test
