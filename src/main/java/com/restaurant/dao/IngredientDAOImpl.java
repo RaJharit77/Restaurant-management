@@ -2,11 +2,13 @@ package com.restaurant.dao;
 
 import com.restaurant.entities.*;
 import com.restaurant.db.DataSource;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
+@Repository
 public class IngredientDAOImpl implements IngredientDAO {
     private final DataSource dataSource;
 

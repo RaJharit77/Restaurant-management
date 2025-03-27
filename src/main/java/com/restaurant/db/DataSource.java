@@ -1,9 +1,13 @@
 package com.restaurant.db;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+@Configuration
 public class DataSource {
     private final static int defaultPort = 5432;
     private final String host = System.getenv("DB_HOST");
@@ -16,6 +20,7 @@ public class DataSource {
         jdbcUrl = "jdbc:postgresql://" + host + ":" + defaultPort + "/" + database;
     }
 
+    @Bean
     public Connection getConnection() {
         try {
             return DriverManager.getConnection(jdbcUrl, user, password);
