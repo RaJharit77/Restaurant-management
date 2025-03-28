@@ -19,14 +19,14 @@ public class DatabaseCleaner {
             "Ingredient"
     );
 
-    private final DataSource dataSource;
+    private final DataBaseSource dataBaseSource;
 
-    public DatabaseCleaner(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public DatabaseCleaner(DataBaseSource dataBaseSource) {
+        this.dataBaseSource = dataBaseSource;
     }
 
     public void cleanAll() {
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              Statement statement = connection.createStatement()) {
 
             statement.execute("SET CONSTRAINTS ALL DEFERRED");
@@ -47,7 +47,7 @@ public class DatabaseCleaner {
     }
 
     public void cleanSpecificTables(String... tables) {
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              Statement statement = connection.createStatement()) {
 
             statement.execute("SET CONSTRAINTS ALL DEFERRED");

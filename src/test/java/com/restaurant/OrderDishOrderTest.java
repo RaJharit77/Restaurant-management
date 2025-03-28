@@ -1,7 +1,7 @@
 package com.restaurant;
 
 import com.restaurant.dao.*;
-import com.restaurant.db.DataSource;
+import com.restaurant.db.DataBaseSource;
 import com.restaurant.db.DatabaseCleaner;
 import com.restaurant.entities.*;
 
@@ -16,16 +16,16 @@ public class OrderDishOrderTest {
     private OrderDAO orderDAO;
     private OrderStatusDAO orderStatusDAO;
     private DishOrderDAO dishOrderDAO;
-    private DataSource dataSource;
+    private DataBaseSource dataBaseSource;
     private DatabaseCleaner databaseCleaner;
 
     @BeforeEach
     void setUp() {
-        dataSource = new DataSource();
-        orderDAO = new OrderDAOImpl(dataSource);
-        dishOrderDAO = new DishOrderDAOImpl(dataSource);
-        orderStatusDAO = new OrderStatusDAOImpl(dataSource);
-        databaseCleaner = new DatabaseCleaner(dataSource);
+        dataBaseSource = new DataBaseSource();
+        orderDAO = new OrderDAOImpl(dataBaseSource);
+        dishOrderDAO = new DishOrderDAOImpl(dataBaseSource);
+        orderStatusDAO = new OrderStatusDAOImpl(dataBaseSource);
+        databaseCleaner = new DatabaseCleaner(dataBaseSource);
 
         databaseCleaner.cleanSpecificTables("Dish_Order", "\"Order\"", "Order_Status");
     }

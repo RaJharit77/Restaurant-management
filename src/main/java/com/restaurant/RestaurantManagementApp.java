@@ -1,7 +1,7 @@
 package com.restaurant;
 
 import com.restaurant.dao.*;
-import com.restaurant.db.DataSource;
+import com.restaurant.db.DataBaseSource;
 import com.restaurant.entities.Dish;
 import com.restaurant.entities.Ingredient;
 import com.restaurant.entities.Unit;
@@ -11,10 +11,10 @@ import java.util.List;
 
 public class RestaurantManagementApp {
     public static void main(String[] args) {
-        DataSource dataSource = new DataSource();
+        DataBaseSource dataBaseSource = new DataBaseSource();
         StockMovementDAO stockMovementDAO = null;
-        DishDAO dishDAO = new DishDAOImpl(dataSource);
-        IngredientDAO ingredientDAO = new IngredientDAOImpl(dataSource);
+        DishDAO dishDAO = new DishDAOImpl(dataBaseSource);
+        IngredientDAO ingredientDAO = new IngredientDAOImpl(dataBaseSource);
 
         Ingredient sausage = new Ingredient(1, "Saucisse", 20, Unit.G, LocalDateTime.now(), 100);
         ingredientDAO.saveAll(List.of(sausage));

@@ -1,7 +1,7 @@
 package com.restaurant.dao;
 
 import com.restaurant.entities.*;
-import com.restaurant.db.DataSource;
+import com.restaurant.db.DataBaseSource;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -10,17 +10,17 @@ import java.util.List;
 
 @Repository
 public class OrderStatusDAOImpl implements OrderStatusDAO {
-    private final DataSource dataSource;
+    private final DataBaseSource dataBaseSource;
 
-    public OrderStatusDAOImpl(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public OrderStatusDAOImpl(DataBaseSource dataBaseSource) {
+        this.dataBaseSource = dataBaseSource;
     }
 
     @Override
     public List<OrderStatus> findByOrderId(int orderId) {
         String query = "SELECT * FROM Order_Status WHERE order_id = ?";
         List<OrderStatus> orderStatuses = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, orderId);
             ResultSet resultSet = statement.executeQuery();
@@ -41,7 +41,7 @@ public class OrderStatusDAOImpl implements OrderStatusDAO {
     @Override
     public OrderStatus save(OrderStatus orderStatus, int orderId) {
         String query = "INSERT INTO Order_Status (order_id, status, changed_at) VALUES (?, ?::status_type, ?) RETURNING order_status_id";
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, orderId);
             statement.setString(2, orderStatus.getStatus().name());

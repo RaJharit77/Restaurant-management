@@ -1,7 +1,7 @@
 package com.restaurant;
 
 import com.restaurant.dao.*;
-import com.restaurant.db.DataSource;
+import com.restaurant.db.DataBaseSource;
 import com.restaurant.entities.Dish;
 import com.restaurant.entities.Ingredient;
 import com.restaurant.entities.Unit;
@@ -24,10 +24,10 @@ public class DishTest {
 
     @BeforeEach
     void setUp() {
-        DataSource dataSource = new DataSource();
-        dishDAO = new DishDAOImpl(dataSource);
-        ingredientDAO = new IngredientDAOImpl(dataSource);
-        stockMovementDAO = new StockMovementImpl(dataSource);
+        DataBaseSource dataBaseSource = new DataBaseSource();
+        dishDAO = new DishDAOImpl(dataBaseSource);
+        ingredientDAO = new IngredientDAOImpl(dataBaseSource);
+        stockMovementDAO = new StockMovementImpl(dataBaseSource);
     }
 
     @Test

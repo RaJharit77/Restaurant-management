@@ -1,26 +1,25 @@
 package com.restaurant.dao;
 
 import com.restaurant.entities.*;
-import com.restaurant.db.DataSource;
+import com.restaurant.db.DataBaseSource;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
 public class DishOrderDAOImpl implements DishOrderDAO {
-    private final DataSource dataSource;
+    private final DataBaseSource dataBaseSource;
 
-    public DishOrderDAOImpl(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public DishOrderDAOImpl(DataBaseSource dataBaseSource) {
+        this.dataBaseSource = dataBaseSource;
     }
 
     @Override
     public DishOrder findById(int id) {
         String query = "SELECT * FROM Dish_Order WHERE dish_order_id = ?";
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
@@ -37,7 +36,7 @@ public class DishOrderDAOImpl implements DishOrderDAO {
     public List<DishOrder> findByOrderId(int orderId) {
         String query = "SELECT * FROM Dish_Order WHERE order_id = ?";
         List<DishOrder> dishOrders = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, orderId);
             ResultSet resultSet = statement.executeQuery();
@@ -53,7 +52,7 @@ public class DishOrderDAOImpl implements DishOrderDAO {
     @Override
     public DishOrder save(DishOrder dishOrder) {
         String query = "INSERT INTO Dish_Order (order_id, dish_id, quantity, status) VALUES (?, ?, ?, ?::status_type) RETURNING dish_order_id";
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, dishOrder.getOrder().getOrderId());
             statement.setInt(2, dishOrder.getDish().getId());
@@ -72,7 +71,7 @@ public class DishOrderDAOImpl implements DishOrderDAO {
     @Override
     public void updateStatus(int dishOrderId, StatusType status) {
         String query = "UPDATE Dish_Order SET status = ?::dish_status WHERE dish_order_id = ?";
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, status.name());
             statement.setInt(2, dishOrderId);

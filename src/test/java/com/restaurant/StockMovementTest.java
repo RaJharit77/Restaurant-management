@@ -1,6 +1,6 @@
 package com.restaurant;
 
-import com.restaurant.db.DataSource;
+import com.restaurant.db.DataBaseSource;
 import com.restaurant.dao.StockMovementImpl;
 import com.restaurant.dao.IngredientDAO;
 import com.restaurant.dao.IngredientDAOImpl;
@@ -12,7 +12,7 @@ import com.restaurant.entities.Unit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.sql.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,15 +21,15 @@ import static org.junit.jupiter.api.Assertions.*;
 public class StockMovementTest {
     private StockMovementImpl stockMovementImpl;
     private IngredientDAO ingredientDAO;
-    private DataSource dataSource;
+    private DataBaseSource dataBaseSource;
     private DatabaseCleaner databaseCleaner;
 
     @BeforeEach
     void setUp() {
-        dataSource = new DataSource();
-        stockMovementImpl = new StockMovementImpl(dataSource);
-        ingredientDAO = new IngredientDAOImpl(dataSource);
-        databaseCleaner = new DatabaseCleaner(dataSource);
+        dataBaseSource = new DataBaseSource();
+        stockMovementImpl = new StockMovementImpl(dataBaseSource);
+        ingredientDAO = new IngredientDAOImpl(dataBaseSource);
+        databaseCleaner = new DatabaseCleaner(dataBaseSource);
 
         databaseCleaner.cleanSpecificTables("Stock_Movement", "Ingredient");
     }

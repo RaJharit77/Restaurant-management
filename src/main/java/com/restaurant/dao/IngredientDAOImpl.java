@@ -1,7 +1,7 @@
 package com.restaurant.dao;
 
 import com.restaurant.entities.*;
-import com.restaurant.db.DataSource;
+import com.restaurant.db.DataBaseSource;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -10,10 +10,10 @@ import java.util.*;
 
 @Repository
 public class IngredientDAOImpl implements IngredientDAO {
-    private final DataSource dataSource;
+    private final DataBaseSource dataBaseSource;
 
-    public IngredientDAOImpl(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public IngredientDAOImpl(DataBaseSource dataBaseSource) {
+        this.dataBaseSource = dataBaseSource;
     }
 
     @Override
@@ -21,7 +21,7 @@ public class IngredientDAOImpl implements IngredientDAO {
         String query = "SELECT * FROM Ingredient";
         List<Ingredient> ingredients = new ArrayList<>();
 
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
 
@@ -46,7 +46,7 @@ public class IngredientDAOImpl implements IngredientDAO {
     @Override
     public Ingredient findById(int id) {
         String query = "SELECT * FROM Ingredient WHERE ingredient_id = ?";
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
@@ -71,7 +71,7 @@ public class IngredientDAOImpl implements IngredientDAO {
         String updateQuery = "UPDATE Ingredient SET name = ?, unit_price = ?, unit = ?::unit_type, update_datetime = ? WHERE ingredient_id = ?";  // Changé ici
         String priceHistoryQuery = "INSERT INTO Price_History (ingredient_id, price, date) VALUES (?, ?, ?)";
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataBaseSource.getConnection()) {
             connection.setAutoCommit(false);
 
             try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS);
@@ -123,7 +123,7 @@ public class IngredientDAOImpl implements IngredientDAO {
         String query = "SELECT price, date FROM Price_History WHERE ingredient_id = ? ORDER BY date DESC";
         List<PriceHistory> priceHistory = new ArrayList<>();
 
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, ingredientId);
             ResultSet resultSet = statement.executeQuery();
@@ -144,7 +144,7 @@ public class IngredientDAOImpl implements IngredientDAO {
     @Override
     public void deleteIngredient(int id) {
         String query = "DELETE FROM Ingredient WHERE ingredient_id = ?";
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
             statement.executeUpdate();
@@ -181,7 +181,7 @@ public class IngredientDAOImpl implements IngredientDAO {
 
         List<Ingredient> ingredients = new ArrayList<>();
 
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
 
             for (int i = 0; i < parameters.size(); i++) {
@@ -211,7 +211,7 @@ public class IngredientDAOImpl implements IngredientDAO {
     @Override
     public void addStockMovement(StockMovement movement) {
         String query = "INSERT INTO Stock_Movement (ingredient_id, movement_type, quantity, unit, movement_date) VALUES (?, ?::movement_type, ?, ?::unit_type, ?)";
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, movement.getIngredientId());
             statement.setString(2, movement.getMovementType().name());
@@ -230,7 +230,7 @@ public class IngredientDAOImpl implements IngredientDAO {
         String priceQuery = "SELECT price FROM Price_History WHERE ingredient_id = ? AND date <= ? ORDER BY date DESC LIMIT 1";
         String stockQuery = "SELECT * FROM Stock_Movement WHERE ingredient_id = ? AND movement_date <= ?";
 
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement ingredientStatement = connection.prepareStatement(ingredientQuery);
              PreparedStatement priceStatement = connection.prepareStatement(priceQuery);
              PreparedStatement stockStatement = connection.prepareStatement(stockQuery)) {

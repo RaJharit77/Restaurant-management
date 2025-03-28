@@ -1,6 +1,6 @@
 package com.restaurant;
 
-import com.restaurant.db.DataSource;
+import com.restaurant.db.DataBaseSource;
 import com.restaurant.dao.IngredientDAO;
 import com.restaurant.dao.IngredientDAOImpl;
 import com.restaurant.entities.Ingredient;
@@ -22,9 +22,9 @@ public class IngredientTest {
 
     @BeforeAll
     static void setUp() {
-        DataSource dataSource = new DataSource();
-        ingredientDAO = new IngredientDAOImpl(dataSource);
-        stockMovementImpl = new StockMovementImpl(dataSource);
+        DataBaseSource dataBaseSource = new DataBaseSource();
+        ingredientDAO = new IngredientDAOImpl(dataBaseSource);
+        stockMovementImpl = new StockMovementImpl(dataBaseSource);
     }
 
     @Test

@@ -30,7 +30,7 @@ bin/
 
 # env
 .env
-
+.env.local
 # script
 script.sql
 restaurant.sql

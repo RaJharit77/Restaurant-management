@@ -1,7 +1,7 @@
 package com.restaurant.dao;
 
 import com.restaurant.entities.*;
-import com.restaurant.db.DataSource;
+import com.restaurant.db.DataBaseSource;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -10,17 +10,17 @@ import java.util.List;
 
 @Repository
 public class OrderDAOImpl implements OrderDAO {
-    private final DataSource dataSource;
+    private final DataBaseSource dataBaseSource;
 
-    public OrderDAOImpl(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public OrderDAOImpl(DataBaseSource dataBaseSource) {
+        this.dataBaseSource = dataBaseSource;
     }
 
     @Override
     public List<Order> getAll() {
         String query = "SELECT * FROM \"Order\""; 
         List<Order> orders = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -40,7 +40,7 @@ public class OrderDAOImpl implements OrderDAO {
     @Override
     public Order findById(int id) {
         String query = "SELECT * FROM \"Order\" WHERE order_id = ?";
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
@@ -61,7 +61,7 @@ public class OrderDAOImpl implements OrderDAO {
     @Override
     public Order findByReference(String reference) {
         String query = "SELECT * FROM \"Order\" WHERE reference = ?";
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, reference);
             ResultSet resultSet = statement.executeQuery();
@@ -87,7 +87,7 @@ public class OrderDAOImpl implements OrderDAO {
         }
 
         String query = "INSERT INTO \"Order\" (reference, created_at, status) VALUES (?, ?, ?::status_type) RETURNING order_id";
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, order.getReference());
             statement.setTimestamp(2, Timestamp.valueOf(order.getCreatedAt()));
@@ -105,7 +105,7 @@ public class OrderDAOImpl implements OrderDAO {
     @Override
     public void updateStatus(int orderId, StatusType status) {
         String query = "UPDATE \"Order\" SET status = ?::status_type WHERE order_id = ?";
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, status.name());
             statement.setInt(2, orderId);
@@ -118,7 +118,7 @@ public class OrderDAOImpl implements OrderDAO {
     @Override
     public void delete(int id) {
         String query = "DELETE FROM \"Order\" WHERE order_id = ?";
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
             statement.executeUpdate();

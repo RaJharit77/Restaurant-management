@@ -2,7 +2,7 @@ package com.restaurant.dao;
 
 import com.restaurant.entities.Dish;
 import com.restaurant.entities.Ingredient;
-import com.restaurant.db.DataSource;
+import com.restaurant.db.DataBaseSource;
 import com.restaurant.entities.Unit;
 import org.springframework.stereotype.Repository;
 
@@ -11,10 +11,10 @@ import java.util.*;
 
 @Repository
 public class DishDAOImpl implements DishDAO {
-    private final DataSource dataSource;
+    private final DataBaseSource dataBaseSource;
 
-    public DishDAOImpl(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public DishDAOImpl(DataBaseSource dataBaseSource) {
+        this.dataBaseSource = dataBaseSource;
     }
 
     @Override
@@ -22,7 +22,7 @@ public class DishDAOImpl implements DishDAO {
         String query = "SELECT * FROM Dish";
         List<Dish> dishes = new ArrayList<>();
 
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
 
@@ -44,7 +44,7 @@ public class DishDAOImpl implements DishDAO {
     @Override
     public Dish findById(int id) {
         String query = "SELECT * FROM Dish WHERE dish_id = ?";
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
@@ -69,7 +69,7 @@ public class DishDAOImpl implements DishDAO {
         String dishIngredientQuery = "INSERT INTO Dish_Ingredient (dish_id, ingredient_id, quantity, unit) VALUES (?, ?, ?, ?::unit_type) "
                 + "ON CONFLICT (dish_id, ingredient_id) DO UPDATE SET quantity = EXCLUDED.quantity, unit = EXCLUDED.unit";
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataBaseSource.getConnection()) {
             connection.setAutoCommit(false);
 
             try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS);
@@ -119,7 +119,7 @@ public class DishDAOImpl implements DishDAO {
     @Override
     public void deleteDish(int id) {
         String query = "DELETE FROM Dish WHERE dish_id = ?";
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
             statement.executeUpdate();
@@ -158,7 +158,7 @@ public class DishDAOImpl implements DishDAO {
 
         List<Dish> dishes = new ArrayList<>();
 
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query.toString())) {
 
             for (int i = 0; i < parameters.size(); i++) {
@@ -189,7 +189,7 @@ public class DishDAOImpl implements DishDAO {
 
         List<Ingredient> ingredients = new ArrayList<>();
 
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, dishId);
             ResultSet resultSet = statement.executeQuery();

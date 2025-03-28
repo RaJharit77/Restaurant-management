@@ -1,6 +1,6 @@
 package com.restaurant.dao;
 
-import com.restaurant.db.DataSource;
+import com.restaurant.db.DataBaseSource;
 import com.restaurant.entities.MovementType;
 import com.restaurant.entities.StockMovement;
 import com.restaurant.entities.Unit;
@@ -11,17 +11,17 @@ import java.util.*;
 
 @Repository
 public class StockMovementImpl implements StockMovementDAO {
-    private final DataSource dataSource;
+    private final DataBaseSource dataBaseSource;
 
-    public StockMovementImpl(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public StockMovementImpl(DataBaseSource dataBaseSource) {
+        this.dataBaseSource = dataBaseSource;
     }
 
     @Override
     public void saveStockMovement(StockMovement stockMovement) {
         String query = "INSERT INTO Stock_Movement (ingredient_id, movement_type, quantity, unit, movement_date) VALUES (?, ?::movement_type, ?, ?::unit_type, ?)";
 
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, stockMovement.getIngredientId());
             statement.setString(2, stockMovement.getMovementType().name());
@@ -39,7 +39,7 @@ public class StockMovementImpl implements StockMovementDAO {
         String query = "SELECT * FROM Stock_Movement WHERE ingredient_id = ? ORDER BY movement_date";
         List<StockMovement> stockMovements = new ArrayList<>();
 
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, ingredientId);
             ResultSet resultSet = statement.executeQuery();

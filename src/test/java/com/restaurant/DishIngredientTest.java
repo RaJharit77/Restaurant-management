@@ -1,7 +1,7 @@
 package com.restaurant;
 
 import com.restaurant.dao.*;
-import com.restaurant.db.DataSource;
+import com.restaurant.db.DataBaseSource;
 import com.restaurant.entities.Dish;
 import com.restaurant.entities.Ingredient;
 import com.restaurant.entities.Unit;
@@ -16,13 +16,13 @@ import java.util.List;
 public class DishIngredientTest {
     private DishDAO dishDAO;
     private IngredientDAO ingredientDAO;
-    private DataSource dataSource;
+    private DataBaseSource dataBaseSource;
 
     @BeforeEach
     void setUp() {
-        dataSource = new DataSource();
-        dishDAO = new DishDAOImpl(dataSource);
-        ingredientDAO = new IngredientDAOImpl(dataSource);
+        dataBaseSource = new DataBaseSource();
+        dishDAO = new DishDAOImpl(dataBaseSource);
+        ingredientDAO = new IngredientDAOImpl(dataBaseSource);
     }
 
     @Test
@@ -61,7 +61,7 @@ public class DishIngredientTest {
 
     @Test
     void testFilterDishByName() {
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = dataBaseSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("DELETE FROM Dish_Ingredient");
             statement.execute("DELETE FROM Dish");
