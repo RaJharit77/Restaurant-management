@@ -15,17 +15,19 @@ public class Order {
     private LocalDateTime createdAt;
     private StatusType status;
     private List<DishOrder> dishOrders = new ArrayList<>();
+    private List<OrderStatus> statusHistory;
 
     public Order() {
         this.status = StatusType.CREATED;
     }
 
-    public Order(int orderId, String reference, LocalDateTime createdAt, StatusType status, List<DishOrder> dishOrders) {
+    public Order(int orderId, String reference, LocalDateTime createdAt, StatusType status, List<DishOrder> dishOrders, List<OrderStatus> statusHistory) {
         this.orderId = orderId;
         this.reference = reference;
         this.createdAt = createdAt;
         this.status = status;
         this.dishOrders = dishOrders;
+        this.statusHistory = statusHistory;
     }
 
     public StatusType getActualStatus() {

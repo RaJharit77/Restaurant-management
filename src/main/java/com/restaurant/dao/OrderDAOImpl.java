@@ -18,7 +18,7 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     public List<Order> getAll() {
-        String query = "SELECT * FROM \"Order\""; 
+        String query = "SELECT * FROM \"Order\"";
         List<Order> orders = new ArrayList<>();
         try (Connection connection = dataBaseSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
