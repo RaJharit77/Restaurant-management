@@ -1,5 +1,7 @@
 package com.restaurant.entities;
 
+import com.restaurant.exceptions.InsufficientStockException;
+import com.restaurant.exceptions.InvalidStatusTransitionException;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -43,5 +45,37 @@ public class Order {
         return dishOrders.stream()
                 .mapToDouble(dishOrder -> dishOrder.getDish().getUnitPrice() * dishOrder.getQuantity())
                 .sum();
+    }
+
+    public void confirmOrder() {
+        if (this.status != StatusType.CREATED) {
+            throw new InvalidStatusTransitionException(
+                    "Cannot confirm order from current status: " + this.status);
+        }
+
+        checkStockAvailability();
+
+        this.status = StatusType.CONFIRMED;
+        this.statusHistory.add(new OrderStatus(0, StatusType.CONFIRMED, LocalDateTime.now()));
+    }
+
+    private void checkStockAvailability() {
+        List<String> missingIngredients = new ArrayList<>();
+
+        for (DishOrder dishOrder : dishOrders) {
+            Dish dish = dishOrder.getDish();
+            double availableQuantity = dish.getAvailableQuantity(LocalDateTime.now());
+
+            if (availableQuantity < dishOrder.getQuantity()) {
+                missingIngredients.add(String.format(
+                        "%s (besoin: %d, disponible: %.2f)",
+                        dish.getName(), dishOrder.getQuantity(), availableQuantity));
+            }
+        }
+
+        if (!missingIngredients.isEmpty()) {
+            throw new InsufficientStockException(
+                    "Stock insuffisant pour: " + String.join(", ", missingIngredients));
+        }
     }
 }

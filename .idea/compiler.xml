@@ -13,7 +13,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="Restaurant-Management-Apps" options="-parameters" />
+      <module name="Restaurant-Management-Apps" options="" />
     </option>
   </component>
 </project>

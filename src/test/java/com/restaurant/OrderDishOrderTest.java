@@ -5,6 +5,8 @@ import com.restaurant.db.DataBaseSource;
 import com.restaurant.db.DatabaseCleaner;
 import com.restaurant.entities.*;
 
+import com.restaurant.exceptions.InsufficientStockException;
+import com.restaurant.exceptions.InvalidStatusTransitionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
@@ -176,4 +178,39 @@ public class OrderDishOrderTest {
 
         assertEquals(expectedTotalAmount, order.getTotalAmount(), 0.001);
     }
+
+    @Test
+    void testOrderConfirmationWithInsufficientStock() {
+        Dish dish = new Dish();
+        dish.setId(1);
+        dish.setName("Hot Dog");
+        dish.setUnitPrice(15000);
+
+        dish.setIngredients(List.of(
+                new Ingredient(1, "Saucisse", 20, Unit.G, LocalDateTime.now(), 100)
+        ));
+
+        Order order = new Order();
+        order.setReference("ORDER-STOCK-TEST");
+        order.setCreatedAt(LocalDateTime.now());
+
+        DishOrder dishOrder = new DishOrder();
+        dishOrder.setDish(dish);
+        dishOrder.setQuantity(2);
+
+        order.addDishOrder(dishOrder);
+
+        assertThrows(InsufficientStockException.class, order::confirmOrder);
+    }
+
+    /*@Test
+    void testInvalidStatusTransition() {
+        Order order = new Order();
+        order.setReference("ORDER-STATUS-TEST");
+        order.setCreatedAt(LocalDateTime.now());
+        order.setStatus(StatusType.CONFIRMED);
+
+        assertThrows(InvalidStatusTransitionException.class,
+                order::getStatus);
+    }*/
 }

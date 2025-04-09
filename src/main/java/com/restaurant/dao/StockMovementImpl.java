@@ -4,12 +4,10 @@ import com.restaurant.db.DataBaseSource;
 import com.restaurant.entities.MovementType;
 import com.restaurant.entities.StockMovement;
 import com.restaurant.entities.Unit;
-import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.*;
 
-@Repository
 public class StockMovementImpl implements StockMovementDAO {
     private final DataBaseSource dataBaseSource;
 

@@ -4,12 +4,10 @@ import com.restaurant.entities.Dish;
 import com.restaurant.entities.Ingredient;
 import com.restaurant.db.DataBaseSource;
 import com.restaurant.entities.Unit;
-import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.*;
 
-@Repository
 public class DishDAOImpl implements DishDAO {
     private final DataBaseSource dataBaseSource;
 
