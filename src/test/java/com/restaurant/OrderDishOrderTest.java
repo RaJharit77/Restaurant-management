@@ -203,7 +203,39 @@ public class OrderDishOrderTest {
         assertThrows(InsufficientStockException.class, order::confirmOrder);
     }
 
-    /*@Test
+    @Test
+    void testConfirmOrder() {
+        Order order = new Order();
+        order.setReference("ORDER-CONFIRM-TEST");
+        order.setCreatedAt(LocalDateTime.now());
+
+        Ingredient ingredient = new Ingredient();
+        ingredient.setName("Ingrédient test");
+        ingredient.setUnitPrice(10);
+        ingredient.setUnit(Unit.U);
+        ingredient.setUpdateDateTime(LocalDateTime.now());
+        ingredient.setRequiredQuantity(1);
+
+        ingredient.getStockMovements().add(new StockMovement(
+                0, 0, MovementType.ENTRY, 10, Unit.U, LocalDateTime.now()
+        ));
+
+        Dish dish = new Dish();
+        dish.setName("Plat test");
+        dish.setUnitPrice(100);
+        dish.setIngredients(List.of(ingredient));
+
+        DishOrder dishOrder = new DishOrder();
+        dishOrder.setDish(dish);
+        dishOrder.setQuantity(1);
+        order.addDishOrder(dishOrder);
+
+        order.updateStatus(StatusType.CONFIRMED);
+
+        assertEquals(StatusType.CONFIRMED, order.getActualStatus());
+    }
+
+    @Test
     void testInvalidStatusTransition() {
         Order order = new Order();
         order.setReference("ORDER-STATUS-TEST");
@@ -211,6 +243,6 @@ public class OrderDishOrderTest {
         order.setStatus(StatusType.CONFIRMED);
 
         assertThrows(InvalidStatusTransitionException.class,
-                order::getStatus);
-    }*/
+                () -> order.updateStatus(StatusType.SERVED));
+    }
 }

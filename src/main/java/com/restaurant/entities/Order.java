@@ -78,4 +78,37 @@ public class Order {
                     "Stock insuffisant pour: " + String.join(", ", missingIngredients));
         }
     }
+
+    private boolean isValidTransition(StatusType current, StatusType newStatus) {
+        switch (current) {
+            case CREATED:
+                return newStatus == StatusType.CONFIRMED;
+            case CONFIRMED:
+                return newStatus == StatusType.IN_PREPARATION;
+            case IN_PREPARATION:
+                return newStatus == StatusType.COMPLETED;
+            case COMPLETED:
+                return newStatus == StatusType.SERVED;
+            default:
+                return false;
+        }
+    }
+
+    public void updateStatus(StatusType newStatus) {
+        if (!isValidTransition(this.status, newStatus)) {
+            throw new InvalidStatusTransitionException(
+                    "Transition invalide de " + this.status + " à " + newStatus);
+        }
+
+        if (newStatus == StatusType.CONFIRMED) {
+            checkStockAvailability();
+        }
+
+        this.status = newStatus;
+        if (statusHistory == null) {
+            statusHistory = new ArrayList<>();
+        }
+        statusHistory.add(new OrderStatus(0, newStatus, LocalDateTime.now()));
+    }
+
 }
